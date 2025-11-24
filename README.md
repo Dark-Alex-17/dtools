@@ -16,6 +16,8 @@ always forget, `dtools` has you covered.
   work on other systems.**
 * **Some scripts assume that `bash` is your default shell, and thus assume that your shell configuration files are
   `.bashrc`. If you use another shell, you may need to modify some scripts to fit your environment.**
+
+For any and all issues, don't hesitate to create a bug report or feature request on the [GitHub Issues page](https://github.com/Dark-Alex-17/dtools/issues)!
 ---
 
 ## Installation
