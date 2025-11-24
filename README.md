@@ -10,10 +10,6 @@ references into a single, easy-to-use interface. Built with the [Bashly](https:/
 Whether you need to spin up a local database, manage AWS resources, analyze code, or just remember that one command you 
 always forget, `dtools` has you covered.
 
-## Nomenclature
-The Devtools script is abbreviated as `dtools` in the command line. This is purely done so that tab completions
-work with fewer keystrokes for the CLI itself. Most commonly, `dto<TAB>` will autocomplete to `dtools`.
-
 ---
 ## Warnings
 * **I've only tested these scripts against Debian-based systems (Ubuntu, Pop!_OS, etc.). Some scripts may not
