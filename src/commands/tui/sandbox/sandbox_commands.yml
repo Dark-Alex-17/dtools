@@ -1,0 +1,40 @@
+name: sandbox
+help: TUIs for sandboxing applications or experimentation
+group: Sandbox TUIs
+
+commands:
+  - name: jqp
+    help: Visual jq query editor
+    dependencies:
+      jqp: See 'https://github.com/noahgorstein/jqp'
+    completions:
+      - <file>
+    args:
+      - name: json_file
+        required: true
+        help: The JSON file to perform jq queries against
+    examples:
+      - dtools tui sandbox jqp ~/test.json
+
+  - name: desed
+    help: A visual Sed IDE to help demystify SED scripts (desed)
+    dependencies:
+      desed: See 'https://github.com/SoptikHa2/desed'
+
+  - name: play
+    help: A Visual sandbox for experimenting with sed, awk, and grep (play)
+    dependencies:
+      play: See 'https://github.com/paololazzari/play'
+    args:
+      - name: program
+        required: true
+        help: The program you want to play with
+        allowed:
+          - sed
+          - awk
+          - grep
+
+  - name: regect
+    help: A Regex 101-like tool (regect)
+    dependencies:
+      regect: See 'https://github.com/kloki/regect'

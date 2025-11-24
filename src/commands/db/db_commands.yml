@@ -1,0 +1,133 @@
+name: db
+help: Database commands
+group: Database
+expose: always
+dependencies:
+  harlequin: Install with 'curl -LsSf https://astral.sh/uv/install.sh | sh'
+  docker: Install with 'dtools install docker'
+  db2dbml: Install with 'npm install -g @dbml/cli'
+
+commands:
+  - name: postgres
+    help: |-
+      Start an interactive Docker container with psql to experiment with PostgreSQL.
+      The default password is 'password'.
+
+      The current directory is also mounted as a read-only volume under '/data' to run scripts.
+    filters:
+      - postgres_not_running
+    flags:
+      - long: --dump
+        help: Dump the persistent DB into a single large SQL script
+        conflicts:
+          [
+            --tui,
+            --persistent,
+            --wipe-persistent-data,
+            --dump-to-dbml,
+            --schema,
+          ]
+
+      - long: --persistent-dir-prefix
+        arg: persistent_dir_prefix
+        help: Specify the persistence directory ($HOME/.db/postgres/<DIR>) to load/wipe the DB from
+        default: 'default'
+        completions:
+          - $(ls -1 $HOME/.db/postgres/)
+
+      - long: --dump-to-dbml
+        help: Dumps the persistent DB into DBML to be imported into dbdiagram.io
+        conflicts: [--tui, --persistent, --wipe-persistent-data, --dump]
+
+      - long: --schema
+        short: -s
+        help: Specify the schema to dump
+        needs: [--dump-to-dbml, --database]
+        conflicts: [--dump]
+        arg: schema
+        repeatable: true
+        unique: true
+
+      - long: --tui
+        help: Open the DB in a TUI (harlequin)
+        conflicts: [--dump]
+
+      - long: --persistent
+        help: Persist the DB data to disk (persists to ~/.db/postgres)
+        conflicts: [--dump]
+
+      - long: --wipe-persistent-data
+        help: Wipe any persistent data from the disk before starting the container
+        conflicts: [--dump]
+        needs: [--persistent]
+
+      - long: --database
+        help: Specify the name of the databaose to use
+        arg: database
+
+      - long: --port
+        help: Specify the host port to expose the DB on
+        default: '5432'
+        arg: port
+
+  - name: mysql
+    help: |-
+      Start an interactive Docker container with mysql to experiment with MySQL.
+      The default password is 'password'.
+
+      The current directory is also mounted as a read-only volume under '/app' to run scripts.
+    filters:
+      - mysql_not_running
+    flags:
+      - long: --persistent-dir-prefix
+        arg: persistent_dir_prefix
+        help: Specify the persistence directory ($HOME/.db/mysql/<DIR>) to load/wipe the DB from
+        default: 'default'
+        completions:
+          - $(ls -1 $HOME/.db/mysql/)
+
+      - long: --dump
+        help: Dump the persistent DB into a single large SQL script
+        conflicts: [--tui, --persistent, --wipe-persistent-data, --dump-to-dbml]
+
+      - long: --dump-to-dbml
+        help: Dumps the persistent DB into DBML to be imported into dbdiagram.io
+        conflicts: [--tui, --persistent, --wipe-persistent-data, --dump]
+
+      - long: --tui
+        help: Open the DB in a TUI (harlequin)
+        conflicts: [--dump]
+
+      - long: --persistent
+        help: Persist the DB data to disk (persists to ~/.db/mysql)
+        conflicts: [--dump]
+
+      - long: --wipe-persistent-data
+        help: Wipe any persistent data from the disk before starting the container
+        conflicts: [--dump]
+        needs: [--persistent]
+
+      - long: --database
+        help: Specify the name of the databaose to use
+        arg: database
+
+      - long: --port
+        help: Specify the host port to expose the DB on
+        default: '3306'
+        arg: port
+
+  - name: bigquery
+    help: |-
+      Start a Harlequin session to big query using the specified project
+    flags:
+      - long: --project
+        short: -p
+        help: The GCP project to use
+        arg: project
+        required: true
+      - long: --location
+        short: -l
+        arg: location
+        help: The GCP location to use
+        allowed:
+          import: src/components/gcp/allowed_locations.yml

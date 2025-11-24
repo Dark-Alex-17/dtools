@@ -1,0 +1,77 @@
+name: logs
+help: AWS Logs commands
+group: Logs
+expose: always
+dependencies:
+  aws: Install the latest version following the instructions at 'https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html'
+  lnav: Install with 'brew install lnav'
+  unbuffer: Install with 'brew install expect'
+
+commands:
+  - name: list-log-groups
+    help: List all of the log groups in CloudWatch
+    filters:
+      - profile_and_region_variables_set_with_flags
+    flags:
+      - import: src/components/aws/profile_flag.yml
+      - import: src/components/aws/region_flag.yml
+      - long: --detailed
+        help: Output the list of all CloudWatch log groups in the full detailed format
+
+  - name: tail-log-group
+    help: Tails the specified CloudWatch log group
+    dependencies:
+      lnav: Install with 'brew install lnav'
+      unbuffer: Install with 'brew install expect'
+    args:
+      - name: log-group
+        required: true
+        help: The name of the log group to tail
+    filters:
+      - profile_and_region_variables_set_with_flags
+    flags:
+      - import: src/components/aws/profile_flag.yml
+      - import: src/components/aws/region_flag.yml
+      - long: --since
+        short: -s
+        arg: since
+        default: 10m
+        help: The time to start tailing the log group from
+        validate: relative_since_time_format
+        completions:
+          - $(for e in s m h d w; do echo "${2//[!0-9]/}${e}"; done)
+      - long: --verbose
+        short: -v
+        help: Show verbose log output
+      - long: --stdout
+        help: Show the log output in stdout
+    examples:
+      - dtools aws tail-log-group /aws/lambda/test-lambda-1
+
+  - name: query-log-groups
+    help: Query one or more log groups with the given query string
+    filters:
+      - profile_and_region_variables_set_with_flags
+    args:
+      - name: query
+        help: The query string to query the log groups for
+        default: fields @timestamp, @message | sort @timestamp desc
+    flags:
+      - import: src/components/aws/profile_flag.yml
+      - import: src/components/aws/region_flag.yml
+      - long: --log-group-name
+        short: -l
+        help: The names of a log group to query for
+        repeatable: true
+        arg: log_group_name
+        required: true
+      - long: --start-time
+        help: The start time for the query (ISO 8601)
+        arg: start_time
+        required: true
+      - long: --end-time
+        help: The end time for the query (ISO 8601)
+        arg: end_time
+        required: true
+    examples:
+      - dtools aws logs query-log-groups 'correlationId' --start-time '2025-03-18T15:00:00Z' --end-time '2025-03-18T16:00:00Z' --log-group-name caerus-api-log-group -l /aws/lambda/revisit-prod-revisit-core-historical-schedules-s3-writer-lambda

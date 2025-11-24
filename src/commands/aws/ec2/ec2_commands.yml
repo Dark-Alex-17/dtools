@@ -1,0 +1,28 @@
+name: ec2
+help: EC2 commands
+group: EC2
+expose: always
+dependencies:
+  aws: Install the latest version following the instructions at 'https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html'
+  jq: Install using 'brew install jq'
+
+commands:
+  - name: list-instances
+    help: List all EC2 instances in the account
+    filters:
+      - profile_and_region_variables_set_with_flags
+    flags:
+      - import: src/components/aws/profile_flag.yml
+      - import: src/components/aws/region_flag.yml
+      - long: --detailed
+        help: Output the list of all instances in the full detailed format
+        conflicts: [--filter]
+      - long: --filter
+        short: -f
+        arg: filter
+        help: Filter the output to only show the specified information
+        repeatable: true
+        unique: true
+        allowed:
+          import: src/components/aws/ec2/allowed_list_instance_filters.yml        
+        conflicts: [--detailed]

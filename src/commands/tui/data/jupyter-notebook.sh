@@ -1,0 +1,1 @@
+euporie-notebook

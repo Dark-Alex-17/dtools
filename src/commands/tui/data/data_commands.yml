@@ -1,0 +1,29 @@
+name: data
+help: TUIs to query or analyze data
+group: Data TUIs
+
+commands:
+  - name: db
+    help: Database management (gobang)
+    dependencies:
+      gobang: See 'https://github.com/TaKO8Ki/gobang'
+
+  - name: explorer
+    help: A terminal interface for exploring and arranging tabular data. (visidata)
+    dependencies:
+      visidata: See 'https://www.visidata.org/'
+
+  - name: database-ide
+    help: The SQL IDE for your terminal. (harlequin)
+    dependencies:
+      harlequin: See 'https://harlequin.sh'
+
+  - name: kafka
+    help: A Kafka cluster query IDE (yozefu)
+    dependencies:
+      yozefu: See 'https://github.com/MAIF/yozefu'
+
+  - name: jupyter-notebook
+    help: Jupyter Notebook in your terminal. (euporie-notebook, euporie-preview, and euporie-console)
+    dependencies:
+      euporie-notebook: See 'https://euporie.readthedocs.io/en/latest/'

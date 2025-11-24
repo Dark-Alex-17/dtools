@@ -1,0 +1,279 @@
+name: dtools
+help: A CLI tool to manage all personal dev tools
+version: 1.0.0
+
+commands:
+  - name: completions
+    help: |-
+      Generate bash completions
+      Usage: eval "\$(dtools completions)"
+    private: true
+
+  - name: update
+    help: Update the dtools CLI to the latest version
+
+  - import: src/commands/ai/ai_commands.yml
+
+  - import: src/commands/aws/aws_commands.yml
+
+  - import: src/commands/gcp/gcp_commands.yml
+
+  - import: src/commands/db/db_commands.yml
+
+  - import: src/commands/elastic/elastic_commands.yml
+
+  - import: src/commands/java/java_commands.yml
+
+  - import: src/commands/ansible/ansible_commands.yml
+
+  - import: src/commands/install/install_commands.yml
+
+  - import: src/commands/clean/clean_commands.yml
+
+  - import: src/commands/tui/tui_commands.yml
+
+  - import: src/commands/pentest/pentest_commands.yml
+
+  - import: src/commands/video/video_commands.yml
+
+  - import: src/commands/vm/vm_commands.yml
+
+  - import: src/commands/network/network_commands.yml
+
+  - import: src/commands/ntfy/ntfy_commands.yml
+
+  - import: src/commands/document/document_commands.yml
+
+  - import: src/commands/git/git_commands.yml
+
+  - name: plot
+    help: Plot data piped into this command (one-off)
+    group: Miscellaneous
+    dependencies:
+      gnuplot: See 'http://gnuplot.info/'
+      loki: See 'https://github.com/Dark-Alex-17/loki'
+    filters:
+      - multiplot_requirements
+      - stack_vertically_multiplot_only
+    flags:
+      - long: --file
+        short: -f
+        arg: file
+        default: '-'
+        help: File with data to plot
+        completions:
+          - <file>
+      - long: --type
+        short: -t
+        arg: type
+        default: 'line'
+        help: The type of plot to create
+        allowed:
+          - line
+          - bar
+      - long: --stack-vertically
+        help: When plotting multiple graphs, stack them vertically instead of combining them into one graph (only for bar graphs)
+      - long: --multiplot
+        help: Plot multiple graphs at once
+      - long: --gui
+        help: Open the plot in a GUI window
+      - long: --loki
+        help: Use Loki to generate the plot command instead of using the templated command
+        conflicts:
+          - '--file'
+          - '--type'
+          - '--stack-vertically'
+          - '--multiplot'
+          - '--gui'
+    examples:
+      - seq 0 10 | dtools plot
+      - seq 0 10 > test_data && dtools plot --file test_data
+
+  - name: real-time-plot
+    help: Continuously plot data piped into this command (like following a log tail)
+    group: Miscellaneous
+    dependencies:
+      gnuplot: See 'http://gnuplot.info/'
+      wget: Install with 'brew install wget' or 'sudo apt install wget'
+    examples: |-
+      {
+        for ((i=0; i<=100; i+=2)); do
+                sleep 1
+                echo "$RANDOM"
+        done
+      } | dtools real-time-plot
+
+  - name: date-to-epoch
+    help: Convert a given date timestamp into epoch millis
+    group: Miscellaneous
+    args:
+      - name: timestamp
+        help: |
+          The date timestamp to convert.
+          Specify '-' to use stdout
+        required: true
+
+  - name: epoch-to-date
+    help: Convert a given epoch (in millis) to a date timestamp
+    group: Miscellaneous
+    args:
+      - name: epoch
+        help: |
+          The epoch (in millis) to convert.
+          Specify '-' to use stdout
+        required: true
+
+  - name: date-to-iso-8601
+    help: Convert a given date into ISO 8601 format
+    group: Miscellaneous
+    args:
+      - name: date
+        help: |
+          The date to convert.
+          Specify '-' to use stdout
+        required: true
+
+  - name: view-markdown
+    help: View markdown file in a browser with images and links
+    group: Miscellaneous
+    dependencies:
+      grip: Install with 'python3 -m pip install grip'
+    completions:
+      - <file>
+    args:
+      - name: file
+        help: The markdown file to view
+        required: true
+
+  - name: start-simple-server
+    help: Starts a simple server using netcat
+    dependencies:
+      nc: Install with 'brew install netcat' or 'sudo apt install netcat'
+    flags:
+      - long: --port
+        default: '8000'
+        arg: port
+        help: The port to run the server on
+        validate: port_number
+
+  - name: fzf
+    help: Pipe the output of a command to fzf for interactive selection
+    group: Miscellaneous
+    dependencies:
+      fzf: Install with 'brew install fzf'
+    args:
+      - name: command
+        help: The command to execute when one or more items are selected
+        default: vi
+    flags:
+      - long: --pre-processing
+        help: pre-processes the fzf selections before passing them into the target 'command'
+        arg: pre-processing
+      - long: --additional-xargs-arguments
+        arg: additional-xargs-arguments
+        help: Additional arguments to pass to xargs
+    examples:
+      - |-
+        # Open selected files in helix
+        grep -ri 'test_value' . | dtools fzf
+      - |-
+        # Tail the selected log group
+        grep -ri 'test_value' . | dtools fzf 'dtools aws logs tail-log-group'
+      - |-
+        # Tail the selected log groups and run them as separate commands for each selected group
+        seq 1 10 | dtools fzf --pre-processing 'xargs -0 -I {} echo "/some/prefix/{}"' --additional-xargs-arguments '-n 1' 'dtools aws logs tail-log-group'
+
+  - name: backup
+    help: >-
+      Create a backup of a file or directory.
+      By default, this will create a copy of the specified file or directory in the same source directory.
+    group: Miscellaneous
+    args:
+      - name: item
+        help: The file or directory to create an in-place backup of.
+        required: true
+    flags:
+      - long: --move
+        help: Instead of copying a file or directory to create a backup, move the directory entirely so the original no longer exists
+      - long: --backup-dest
+        arg: backup-dest
+        help: Specify a destination directory for the backed up file or directory to be placed in
+        completions:
+          - <directory>
+        validate: directory_exists
+    completions:
+      - <file>
+      - <directory>
+
+  - name: generate-password
+    help: Randomly generate a secure password
+    dependencies:
+      openssl: Install with either 'sudo apt install libssl-dev' or 'brew install openssl@3'
+      xclip: Install with 'brew install xclip'
+    flags:
+      - long: --copy-to-clipboard
+        short: -c
+        help: Copy the generated password to your clipboard
+
+  - name: play-mp3
+    help: >-
+      Play a given mp3 sound using the command line.
+      This is useful when combined with ntfy to subscribe to a topic and play a sound whenever receiving a notification
+    dependencies:
+      mpg321: Install with 'brew install mpg321'
+    args:
+      - name: sound
+        help: The mp3 sound file to play
+        required: true
+    completions:
+      - <file>
+      - <directory>
+
+  - name: random-int
+    help: Generate a random integer in the given range
+    flags:
+      - long: --min
+        arg: min
+        help: The minimum value of the integer range (inclusive)
+        default: '0'
+      - long: --max
+        arg: max
+        help: The maximum value of the integer range (inclusive)
+        default: '10'
+
+  - name: random-float
+    help: Generate a random float in the given range
+    flags:
+      - long: --min
+        arg: min
+        help: The minimum value of the float range (inclusive)
+        default: '0'
+      - long: --max
+        arg: max
+        help: The maximum value of the float range (inclusive)
+        default: '10'
+      - long: --precision
+        arg: precision
+        help: The precision to output the random number with
+        default: '5'
+        validate: integer
+
+  - name: record-shell
+    help: Record the current shell and create a gif of the session.
+    dependencies:
+      asciinema: Install with 'brew install asciinema'
+      agg: Install with 'cargo install agg'
+    args:
+      - name: output_file
+        help: The output gif file to create (do not include '.gif' in the filename)
+        required: true
+    flags:
+      - long: --speed
+        arg: speed
+        help: The speed multiplier for the gif playback
+        default: '1'
+      - long: --no-conversion
+        help: Do not convert the finished asciinema recording to a gif (keep it as an asciinema file)
+    completions:
+      - <file>
+      - <directory>

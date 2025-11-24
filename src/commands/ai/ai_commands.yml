@@ -1,0 +1,29 @@
+name: ai
+help: AI commands
+group: AI
+expose: always
+dependencies:
+  llama-cli: Install with 'brew install llama.cpp'
+
+commands:
+  - name: chat
+    help: Chat with a model running on your local machine via llama.cpp
+    flags:
+      - import: src/components/ai/hf_repo_flag.yml
+      - import: src/components/ai/hf_file_flag.yml
+
+  - name: start-llama-server
+    help: Start a llama.cpp server
+    flags:
+      - import: src/components/ai/hf_repo_flag.yml
+      - import: src/components/ai/hf_file_flag.yml
+
+  - name: open-llama-ui
+    help: Open the llama.cpp UI in a browser
+    filters:
+      - llama_running
+
+  - name: open-llama-api-docs
+    help: Open the Llama API documentation in a browser
+    filters:
+      - llama_running

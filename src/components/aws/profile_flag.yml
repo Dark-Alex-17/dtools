@@ -1,0 +1,7 @@
+long: --profile
+short: -p
+arg: profile
+help: The AWS profile to use
+validate: aws_profile_exists
+completions:
+  - $(awk '/\[profile*/ { print substr($2, 1, length($2)-1);}' ~/.aws/config)

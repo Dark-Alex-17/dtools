@@ -1,0 +1,110 @@
+blue_bold "Running BleachBit"
+
+spinny-start
+readarray -t bleachbitCleanList < <(cat <<-EOF
+	adobe_reader.cache
+	adobe_reader.mru
+	adobe_reader.tmp
+	apt.autoclean
+	apt.autoremove
+	apt.clean
+	apt.package_lists
+	chromium.cache
+	chromium.cookies
+	chromium.dom
+	chromium.form_history
+	chromium.history
+	chromium.passwords
+	chromium.search_engines
+	chromium.session
+	chromium.sync
+	chromium.vacuum
+	discord.cache
+	discord.cookies
+	discord.history
+	discord.vacuum
+	elinks.history
+	epiphany.cache
+	epiphany.cookies
+	epiphany.dom
+	epiphany.passwords
+	epiphany.places
+	evolution.cache
+	firefox.cache
+	firefox.cookies
+	firefox.crash_reports
+	flash.cache
+	gedit.recent_documents
+	gimp.tmp
+	google_chrome.cache
+	google_chrome.cookies
+	google_chrome.dom
+	google_chrome.form_history
+	google_chrome.history
+	google_chrome.passwords
+	google_chrome.search_engines
+	google_chrome.session
+	google_chrome.sync
+	google_chrome.vacuum
+	google_earth.temporary_files
+	google_toolbar.search_history
+	java.cache
+	journald.clean
+	libreoffice.cache
+	libreoffice.history
+	openofficeorg.cache
+	openofficeorg.recent_documents
+	opera.cache
+	opera.cookies
+	opera.dom
+	opera.form_history
+	opera.history
+	opera.passwords
+	opera.session
+	opera.vacuum
+	pidgin.cache
+	pidgin.logs
+	realplayer.cookies
+	realplayer.history
+	realplayer.logs
+	rhythmbox.cache
+	rhythmbox.history
+	seamonkey.cache
+	seamonkey.chat_logs
+	seamonkey.cookies
+	seamonkey.download_history
+	seamonkey.history
+	secondlife_viewer.Cache
+	secondlife_viewer.Logs
+	skype.chat_logs
+	skype.installers
+	sqlite3.history
+	system.cache
+	system.clipboard
+	system.rotated_logs
+	system.trash
+	system.tmp
+	thumbnails.cache
+	thunderbird.cache
+	thunderbird.cookies
+	thunderbird.index
+	thunderbird.passwords
+	thunderbird.vacuum
+	transmission.history
+	transmission.torrents
+	vlc.memory_dump
+	vlc.mru
+	wine.tmp
+	winetricks.temporary_files
+	x11.debug_logs
+	EOF
+	)
+
+for cleaner in "${bleachbitCleanList[@]}"; do 
+	blue_bold "Running BleachBit cleaner: $cleaner"
+	sudo bleachbit -c "$cleaner"
+done
+
+spinny-stop
+
+green_bold "Finished running BleachBit cleaners"

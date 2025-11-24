@@ -1,0 +1,84 @@
+name: network
+help: TUIs for various network tools
+group: Network TUIs
+
+commands:
+  - name: network-manager
+    help: TUI application for interacting with NetworkManager (nmtui)
+    dependencies:
+      nmtui: See 'https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/7/html/networking_guide/sec-configuring_ip_networking_with_nmtui'
+
+  - name: bluetooth-manager
+    help: TUI-based bluetooth connection manager (bluetuith)
+    dependencies:
+      bluetuith: See 'https://github.com/bluetuith-org/bluetuith'
+
+  - name: wireguard-config
+    help: TUI for managing WireGuard configuration files (wg-cmd)
+    dependencies:
+      wg-cmd: See 'https://github.com/andrianbdn/wg-cmd'
+
+  - name: mitm-proxy
+    help: Interactive HTTP(S) proxy (mitmproxy)
+    dependencies:
+      mitmproxy: See 'https://www.mitmproxy.org/'
+
+  - name: proxy
+    help: A powerful and flexible proxy CLI for capturing and inspecting HTTP(S) and WS(S) traffic, with TUI and WebUI (proxyfor)
+    dependencies:
+      proxyfor: See 'https://github.com/sigoden/proxyfor'
+
+  - name: proxymock
+    help: Proxymock watches your app run and automatically creates isolation tests and realistic service mocks—no scripts, no stubs, no flaky envs. (proxymock)
+    dependencies:
+      proxymock: See 'https://speedscale.com/proxymock/'
+
+  - name: http-load-generator
+    help: HTTP load generator and stress tester (oha)
+    dependencies:
+      oha: See 'https://github.com/hatoo/oha'
+
+  - name: ping
+    help: Ping but with a graph (gping)
+    dependencies:
+      gping: See 'https://github.com/orf/gping'
+
+  - name: full-browser
+    help: Text based browser with images (browsh)
+    dependencies:
+      browsh: See 'https://www.brow.sh/'
+
+  - name: elinks
+    help: WWW text browser (elinks)
+    dependencies:
+      elinks: See 'http://elinks.or.cz/'
+
+  - name: w3m
+    help: Another text browser that's an alternative to elinks (w3m)
+    dependencies:
+      w3m: See 'https://github.com/acg/w3m'
+
+  - name: lynx
+    help: Yet another text browser that's an alternative to elinks (lynx)
+    dependencies:
+      lynx: See 'https://lynx.browser.org/'
+
+  - name: carbonyl
+    help: A Chromium-based in-terminal web browser (carbonyl)
+    dependencies:
+      carbonyl: See 'https://github.com/fathyb/carbonyl'
+
+  - name: http-request-client
+    help: HTTP Request client like Postman (wuzz)
+    dependencies:
+      wuzz: See 'https://github.com/asciimoo/wuzz'
+
+  - name: http-request-client-2
+    help: HTTP request client like Postman or Insomnia (slumber)
+    dependencies:
+      slumber: See 'https://slumber.lucaspickering.me/'
+
+  - name: api-client
+    help: A simple API client (Postman-like) (atac)
+    dependencies:
+      atac: See 'https://atac.julien-cpsn.com/'

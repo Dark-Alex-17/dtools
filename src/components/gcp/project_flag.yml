@@ -1,0 +1,6 @@
+long: --project
+short: -p
+arg: project
+help: The GCP project to use
+completions:
+  - $(gcloud projects list | awk 'NR > 1 {print $1}')

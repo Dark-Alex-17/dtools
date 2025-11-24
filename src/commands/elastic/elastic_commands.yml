@@ -1,0 +1,23 @@
+name: elastic
+help: Elastic Stack commands
+group: Elastic
+expose: always
+dependencies:
+  docker: Install with 'dtools install docker'
+  docker-compose: Install with 'dtools install docker'
+  git: Install with 'brew install git'
+
+commands:
+  - name: init
+    help: Initialize a local Elastic Stack (Elasticsearch + Kibana + Logstash)
+  
+  - name: start
+    help: |-
+      Start a local Elastic Stack (Elasticsearch + Kibana + Logstash)
+      Default credentials:
+
+      Username: elastic
+      Password: changeme
+
+  - name: stop
+    help: Stop a locally running Elastic Stack (Elasticsearch + Kibana + Logstash)

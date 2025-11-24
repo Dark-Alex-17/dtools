@@ -1,0 +1,36 @@
+name: clean
+help: System cleaning commands
+group: Cleaning
+expose: always
+
+commands:
+  - name: bleachbit
+    help: |-
+      Perform a system-wide upkeep cleanup with BleachBit
+      Note: This will clean Chrome, Opera, and Chromium caches and passwords
+    dependencies:
+      bleachbit: Install from 'https://www.bleachbit.org/download'
+
+  - name: docker
+    help: Clean docker images, containers, and volumes
+    dependencies:
+      docker: Install with 'dtools install docker'
+
+  - name: package-caches
+    help: Clean package manager caches (Debian-based systems only)
+    filters:
+      - debian_based_os
+
+  - name: logs
+    help: Clean up system logs by deleting old logs and clearing the journal
+
+  - name: build-caches
+    help: Clean all build caches
+    completions:
+      - <directory>
+    args:
+      - name: code-directory
+        required: true
+        help: The base directory for all of your code repositories to recursively clean build caches from
+    examples:
+      - dtools clean build-caches ~/code

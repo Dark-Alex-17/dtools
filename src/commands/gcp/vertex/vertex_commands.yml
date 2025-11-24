@@ -1,0 +1,115 @@
+name: vertex
+help: Vertex AI commands
+group: Vertex
+expose: always
+dependencies:
+  gcloud: Install the latest version following the instructions at 'https://docs.cloud.google.com/sdk/docs/install'
+  jq: Install with 'brew install jq'
+
+commands:
+  - name: deploy-model
+    help: |-
+      Deploy a model into Vertex AI (assumes only one model is deployed on the given endpoint).
+
+      This will do the following:
+      - Upload the specified model into the Vertex Model Registry
+      - Check if an endpoint exists corresponding to the provided name
+      - If not, it will create an endpoint
+      - Undeploy any pre-existing models on the endpoint (assumes 1 model per endpoint)
+      - Deploy the new model to the endpoint
+
+      Always be sure to build the image first and then push it to the corresponding Artifact Registry repo; e.g
+      'docker push us-central1-docker.pkg.dev/prod/serving-docker/alex-test:latest'
+    filters:
+      - project_and_location_variables_set_with_flags
+    flags:
+      - import: src/components/gcp/project_flag.yml
+      - import: src/components/gcp/location_flag.yml
+      - long: --display-name
+        short: -d
+        arg: display_name
+        help: Display name of the model.
+        required: true
+      - long: --container-image
+        short: -c
+        arg: container_image
+        help: |-
+          URI of the Model serving container file in the Container Registry (e.g. repository/image:latest).
+
+          You can list repositories with: dtools gcp artifacts list-repositories
+          You can list images with: dtools gcp artifacts list-images <REPOSITORY_NAME>
+        required: true
+      - long: --container-port
+        arg: container_port
+        help: Container port to receive HTTP requests at
+        default: '8080'
+      - long: --health-route
+        arg: health_route
+        help: HTTP path to send health checks to inside the container
+        default: '/isalive'
+      - long: --predict-route
+        arg: predict_route
+        help: HTTP path to send prediction requests to inside the container
+        default: '/predict'
+      - long: --model-gcs-uri
+        arg: model_gcs_uri
+        help: |-
+          Path to the directory containing the Model artifact and any of its supporting files.
+
+          If undefined, ensure the model image that is being deployed contains the model JSON within the image.
+
+          Use 'gcloud storage ls gs://<PROJECT>' to find the URI of the model artifact you wish to use
+      - long: --endpoint-name
+        short: -e
+        arg: endpoint_name
+        help: The name of the endpoint to deploy the model to (will create one if it does not already exist)
+        required: true
+      - long: --machine-type
+        short: -m
+        arg: machine_type
+        help: The machine type to use for the deployed model (e.g. n1-standard-4)
+        default: n1-standard-2
+      - long: --accelerator
+        help: The type of accelerator to attach to the machine
+        arg: accelerator
+    examples:
+      - dtools gcp vertex deploy-model --display-name alex-vertex-test --container-image serving-docker/alex-vertex-test:latest -e alex-vertex-test-endpoint
+      - dtools gcp vertex deploy-model --display-name alex-test --container-image serving-docker/alex-test:latest -e alex-test-endpoint --accelerator nvidia-tesla-t4
+      - dtools gcp vertex deploy-model --display-name alex-vertex-test --container-image serving-docker/alex-vertex-test:latest --model-gcs-uri model-training/388781844076/vertex-model-training-pipeline-20250319032739/store-model-in-gcs_1311307013581438976 -e alex-arrhythmia-test-endpoint
+
+  - name: predict
+    help: Query a Vertex endpoint with a prediction request
+    flags:
+      - import: src/components/gcp/location_flag.yml
+      - long: --file
+        short: -f
+        arg: file
+        help: The JSON file to query the model with
+        completions:
+          - <file>
+      - long: --endpoint-name
+        short: -e
+        arg: endpoint_name
+        help: The name of the endpoint to query
+
+  - name: list-endpoints
+    help: List all Vertex endpoints for the specified project and region
+    filters:
+      - project_and_location_variables_set_with_flags
+    flags:
+      - import: src/components/gcp/project_flag.yml
+      - import: src/components/gcp/location_flag.yml
+      - long: --detailed
+        help: Output the gcloud query with full details in JSON format
+
+  - name: tail-endpoint-logs
+    help: Tail the logs for the given endpoint
+    args:
+      - name: endpoint_name
+        required: true
+        help: The name of the endpoint whose logs you wish to tail
+    filters:
+      - project_and_location_variables_set_with_flags
+    flags:
+      - import: src/components/gcp/project_flag.yml
+      - import: src/components/gcp/location_flag.yml

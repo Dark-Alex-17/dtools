@@ -1,0 +1,62 @@
+name: gcp
+help: GCP commands
+group: GCP
+expose: always
+dependencies:
+  gcloud: Install the latest version following the instructions at 'https://docs.cloud.google.com/sdk/docs/install'
+
+commands:
+  - name: login
+    help: |-
+      Log in to GCP using SSO.
+      This command will also set your 'GCP_PROJECT' and 'GCP_LOCATION' environment variables.
+
+      This command is essentially a shorthand for the following commands:
+      dtools gcp project <PROJECT>
+      dtools gcp location <LOCATION>
+      gcloud auth login
+      gcloud auth application-default login
+    filters:
+      - project_and_location_variables_set_with_flags
+    flags:
+      - import: src/components/gcp/project_flag.yml
+      - import: src/components/gcp/location_flag.yml
+    examples:
+      - dtools gcp login -p lab -r us-central1
+      - dtools gcp login --project prod --location africa-south1
+      - |-
+        # When the 'GCP_PROJECT' and 'GCP_LOCATION' environment variables are already
+        # set
+        dtools gcp login
+
+  - name: project
+    help: Change GCP project
+    completions:
+      - $(gcloud projects list | awk 'NR > 1 {print $1}')
+    args:
+      - name: project
+        required: true
+        help: The GCP project to use
+    examples:
+      - dtools gcp project lab
+
+  - name: location
+    help: Change GCP location
+    args:
+      - name: location
+        required: true
+        help: The GCP location to use
+        allowed:
+          import: src/components/gcp/allowed_locations.yml
+    examples:
+      - dtools gcp location us-central1
+
+  - name: get-project-number
+    help: Get the GCP project number of the specified project
+    args:
+      - name: project_name
+        required: true
+        help: The name of the project whose number you wish to fetch
+
+  - import: src/commands/gcp/vertex/vertex_commands.yml
+  - import: src/commands/gcp/artifacts/artifacts_commands.yml

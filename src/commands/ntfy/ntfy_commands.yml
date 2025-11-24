@@ -1,0 +1,29 @@
+name: ntfy
+help: ntfy commands for easy reference
+group: Ntfy
+expose: always
+dependencies:
+  ntfy: Ensure ntfy is installed and configured (see 'https://docs.ntfy.sh/install/')
+
+commands:
+  - name: subscribe
+    dependencies:
+      mpg321: Install with 'brew install mpg321'
+    help: >-
+      Subscribe to the specified ntfy topic and optionally play a sound
+      whenever a message is received.
+    args:
+      - name: topic
+        help: The name of the ntfy topic to subscribe to
+        default: "alerts"
+    flags:
+      - long: --sound
+        short: -s
+        arg: sound
+        help: The mp3 sound file to play when a message is received
+    examples:
+      - dtools ntfy subscribe vpn --sound ~/Music/notification-sounds/notify.mp3
+      - ntfy sub topic 'echo "$raw" && mpg321 -q ~/Music/notification-sounds/notify.mp3'
+
+  - name: reference
+    help: Open the ntfy message publishing reference page in your default browser

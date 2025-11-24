@@ -1,0 +1,137 @@
+name: ssm
+help: SSM commands
+group: SSM
+expose: always
+dependencies:
+  aws: Install the latest version following the instructions at 'https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html'
+  jq: Install using 'brew install jq'
+
+commands:
+  - name: start-port-forwarding
+    help: Use SSM to connect to an EC2 instance and forward a local port to the remote machine
+    args:
+      - name: instance-id
+        help: The ID of the EC2 instance to connect to
+        required: true
+    filters:
+      - profile_and_region_variables_set_with_flags
+    flags:
+      - import: src/components/aws/profile_flag.yml
+      - import: src/components/aws/region_flag.yml
+      - long: --remote-port
+        help: The port number of the server on the EC2 instance
+        arg: remote-port
+        default: "80"
+        validate: aws_ssm_port_forwarding_number
+      - long: --local-port
+        help: The port number on the local machine to forward traffic to. An open port is chosen at run-time if not provided.
+        arg: local-port
+        default: "0"
+        validate: aws_ssm_port_forwarding_number
+      - long: --host
+        help: Hostname or IP address of the destination server
+        arg: host
+        default: localhost
+        validate: aws_ssm_port_forwarding_host
+    examples:
+      - dtools aws start-port-forwarding i-0892eeaed80a5b00b --remote-port 5432 --local-port 5432 --host prod-postgres.ctm8i4qgknv3.us-east-1.rds.amazonaws.com --profile prod --region us-east-1
+
+  - name: start-ngrok-bastion-instance
+    help: Start an EC2 instance to act as a bastion host for ngrok
+    dependencies:
+      jq: Install with 'brew install jq'
+    filters:
+      - profile_and_region_variables_set_with_flags
+    flags:
+      - import: src/components/aws/profile_flag.yml
+      - import: src/components/aws/region_flag.yml
+      - long: --hostname
+        help: |
+          The hostname to forward connections to. 
+          This will be hostnames like the ones that are only accessible via AWS ECS Service Discovery (e.g. api.caerus.local)
+        required: true
+      - long: --subnet-id
+        help: The subnet ID that the instance is to be deployed into
+        required: true
+      - long: --port
+        help: The port on the destination hostname to forward connections to
+        arg: port
+        default: "8080"
+      - long: --ngrok-url
+        short: -u
+        arg: ngrok_url
+        help: The ngrok URL to connect to
+        required: true
+      - long: --ngrok-auth-token
+        short: -a
+        arg: ngrok_auth_token
+        help: The ngrok authentication token
+        required: true
+
+  - name: list-parameters
+    help: List all AWS SSM Parameter Store parameters
+    filters:
+      - profile_and_region_variables_set_with_flags
+    flags:
+      - import: src/components/aws/profile_flag.yml
+      - import: src/components/aws/region_flag.yml
+      - long: --detailed
+        help: Output the list of all parameters in the detailed format
+
+  - name: get-parameter
+    help: Get the value of an AWS SSM Parameter Store parameter
+    args:
+      - name: parameter_name
+        required: true
+        help: The name of the parameter to retrieve
+    filters:
+      - profile_and_region_variables_set_with_flags
+    flags:
+      - import: src/components/aws/profile_flag.yml
+      - import: src/components/aws/region_flag.yml
+      - long: --detailed
+        help: Output the parameter value in detailed format
+
+  - name: create-parameter
+    help: Create a new parameter in AWS SSM Parameter Store
+    filters:
+      - profile_and_region_variables_set_with_flags
+    flags:
+      - import: src/components/aws/profile_flag.yml
+      - import: src/components/aws/region_flag.yml
+      - long: --name
+        help: Name for the new parameter
+        required: true
+        arg: name
+      - long: --value
+        help: The value of the parameter to be stored
+        required: true
+        arg: value
+
+  - name: update-parameter
+    help: Update an existing parameter in AWS SSM Parameter Store (Will create a new parameter if it does not exist)
+    filters:
+      - profile_and_region_variables_set_with_flags
+    flags:
+      - import: src/components/aws/profile_flag.yml
+      - import: src/components/aws/region_flag.yml
+      - long: --name
+        help: Name of the parameter to update
+        required: true
+        arg: name
+      - long: --value
+        help: The value of the parameter to be stored
+        required: true
+        arg: value
+
+  - name: delete-parameter
+    help: Delete a parameter from AWS SSM Parameter Store
+    filters:
+      - profile_and_region_variables_set_with_flags
+    flags:
+      - import: src/components/aws/profile_flag.yml
+      - import: src/components/aws/region_flag.yml
+    args:
+      - name: parameter_name
+        required: true
+        help: The name of the parameter to delete

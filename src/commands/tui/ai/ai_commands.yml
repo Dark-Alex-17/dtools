@@ -1,0 +1,9 @@
+name: ai
+help: TUIs for AI related tooling
+group: AI TUIs
+
+commands:
+  - name: elia
+    help: A TUI for interacting with LLMs
+    dependencies:
+      elia: See 'https://github.com/darrenburns/elia'

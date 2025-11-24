@@ -1,0 +1,29 @@
+name: network-monitoring
+help: TUIs for monitoring network activities
+group: Network Monitoring TUIs
+
+commands:
+  - name: wavemon
+    help: WiFi monitor to display stats about your current connection like signal strength (wavemon)
+    dependencies:
+      wavemon: See 'https://github.com/uoaerg/wavemon'
+
+  - name: network-diags
+    help: Network diagnostic tool (trippy)
+    dependencies:
+      trippy: See 'https://github.com/fujiapple852/trippy'
+
+  - name: ip-traffic
+    help: Monitor IP traffic (iptraf)
+    dependencies:
+      iptraf: See 'http://iptraf.seul.org/'
+
+  - name: socket-stats
+    help: User-friendly and detailed socket statistics (neoss)
+    dependencies:
+      neoss: See 'https://github.com/PabloLec/neoss'
+
+  - name: netscanner
+    help: Terminal network scanner and diagnostic tool (netscanner)
+    dependencies:
+      netscanner: See 'https://github.com/Chleba/netscanner'

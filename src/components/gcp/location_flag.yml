@@ -1,0 +1,7 @@
+long: --location
+short: -l
+arg: location
+default: 'us-central1'
+help: The GCP location to use
+allowed:
+  import: src/components/gcp/allowed_locations.yml

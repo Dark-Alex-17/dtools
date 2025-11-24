@@ -1,0 +1,16 @@
+name: tui
+help: TUIs (Documentation only)
+group: TUI
+expose: always
+
+commands:
+  - import: src/commands/tui/monitoring/monitoring_commands.yml
+  - import: src/commands/tui/network-monitoring/network_monitoring_commands.yml
+  - import: src/commands/tui/network/network_commands.yml
+  - import: src/commands/tui/docker/docker_commands.yml
+  - import: src/commands/tui/development/development_commands.yml
+  - import: src/commands/tui/dev-help/dev_help_commands.yml
+  - import: src/commands/tui/data/data_commands.yml
+  - import: src/commands/tui/misc/misc_commands.yml
+  - import: src/commands/tui/sandbox/sandbox_commands.yml
+  - import: src/commands/tui/ai/ai_commands.yml

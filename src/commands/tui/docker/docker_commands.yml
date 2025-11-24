@@ -1,0 +1,19 @@
+name: docker
+help: TUIs for Docker related tools
+group: Docker TUIs
+
+commands:
+  - name: docker
+    help: Manage local Docker (lazydocker)
+    dependencies:
+      lazydocker: See 'https://github.com/jesseduffield/lazydocker'
+
+  - name: docker-layer-analyzer
+    help: A tool for exploring a docker image, layer contents, and discovering ways to shrink the size of your Docker/OCI image. (dive)
+    dependencies:
+      dive: See 'https://github.com/wagoodman/dive'
+
+  - name: kubernetes
+    help: Manage your Kubernetes cluster (k9s)
+    dependencies:
+      k9s: See 'https://github.com/derailed/k9s'

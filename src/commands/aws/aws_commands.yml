@@ -1,0 +1,135 @@
+name: aws
+help: AWS commands
+group: AWS
+expose: always
+dependencies:
+  aws: Install the latest version following the instructions at 'https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html'
+
+commands:
+  - name: login
+    help: |-
+      Log in to AWS using SSO. 
+      This command will also set your 'AWS_PROFILE' and 'AWS_REGION' environment variables.
+      It will also export temporary credentials to your environment with the 'AWS_ACCESS_KEY_ID' and 'AWS_SECRET_ACCESS_KEY' environment variables.
+
+      This command is essentially a shorthand for the following commands:
+      dtools aws profile <PROFILE>
+      dtools aws region <REGION>
+      dtools aws login
+      dtools aws export-sso-creds
+    filters:
+      - profile_and_region_variables_set_with_flags
+    flags:
+      - import: src/components/aws/profile_flag.yml
+      - import: src/components/aws/region_flag.yml
+    examples:
+      - dtools aws login -p prod -r us-east-1
+      - |-
+        # When the 'AWS_PROFILE' and 'AWS_REGION' environment variables are already
+        # set
+        dtools aws login
+
+  - name: console
+    help: Open the AWS console in your default browser using the current AWS_REGION and AWS_PROFILE
+    dependencies:
+      wmctrl: Install with 'sudo apt-get install wmctrl'
+    filters:
+      - profile_and_region_variables_set_with_flags
+    flags:
+      - import: src/components/aws/profile_flag.yml
+      - import: src/components/aws/region_flag.yml
+      - long: --service
+        short: -s
+        help: The AWS service to open the console to
+        arg: service
+        completions:
+          - >-
+            $(python -c $'import boto3\nfor service in boto3.Session().get_available_services(): print(service)' | grep -v 'codestar\|honeycode\|mobile\|worklink')
+
+  - name: shell
+    help: Drop into an interactive AWS CLI shell with auto-completion
+
+  - name: profile
+    help: Change AWS profile
+    completions:
+      - $(cat ~/.aws/config | awk '/\[profile*/ { print substr($2, 1, length($2)-1); }')
+    args:
+      - name: profile
+        required: true
+        help: The AWS profile to use, corresponding profiles in your ~/.aws/config
+        validate: aws_profile_exists
+    examples:
+      - dtools aws profile prod
+
+  - name: region
+    help: Change AWS region
+    args:
+      - name: region
+        required: true
+        help: The AWS region to use
+        allowed:
+          import: src/components/aws/allowed_regions.yml
+    examples:
+      - dtools aws region us-east-1
+
+  - name: toggle-auto-prompt
+    help: Toggle the AWS CLI auto prompt
+
+  - name: export-sso-creds
+    help: |-
+      Exports SSO credentials to environment variables for use with AWS SDKs
+      This includes all of the following variables: 
+
+      AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY
+      AWS_SESSION_TOKEN
+      AWS_CREDENTIAL_EXPIRATION
+      AWS_REGION
+    filters:
+      - profile_and_region_variables_set_with_flags
+    flags:
+      - import: src/components/aws/profile_flag.yml
+      - import: src/components/aws/region_flag.yml
+
+  - name: generate-sso-profiles
+    help: |-
+      Fetch all AWS accounts via AWS SSO, and generate the profiles for CLI connectivity.
+
+      In the event that the script fails automation when selecting an account to use for the basic setup,
+      you can manually perform this first step by running 'aws configure sso', use 'https://d-123456789ab.awsapps.com/start'
+      as the SSO Start URL, and use any account with any settings. Then you can run this command again for it
+      to work properly.
+
+    dependencies:
+      jq: Install with 'brew install jq'
+    flags:
+      - long: --backup
+        help: Create a backup of the previous AWS config
+      - long: --default-cli-region
+        short: -d
+        arg: default-cli-region
+        help: |-
+          The default CLI region for each profile.
+          Defaults to using the same region as the provided SSO region
+        allowed:
+          import: src/components/aws/allowed_regions.yml
+      - long: --sso-region
+        short: -r
+        arg: sso-region
+        required: true
+        help: The region for SSO accounts
+        allowed:
+          import: src/components/aws/allowed_regions.yml
+      - long: --sso-start-url
+        short: -u
+        arg: sso-start-url
+        required: true
+        help: The start URL for SSO authentication
+    examples:
+      - dtools aws generate-sso-profiles -u https://d-123456789ab.awsapps.com/start -r us-east-1
+
+  - import: src/commands/aws/ec2/ec2_commands.yml
+  - import: src/commands/aws/ssm/ssm_commands.yml
+  - import: src/commands/aws/secretsmanager/secretsmanager_commands.yml
+  - import: src/commands/aws/logs/logs_commands.yml
+  - import: src/commands/aws/rds/rds_commands.yml

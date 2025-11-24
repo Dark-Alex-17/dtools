@@ -1,0 +1,5 @@
+long: --hf-file
+short: -f
+arg: hf_file
+help: The Hugging Face model GGUF file to use
+default: "Phi-3-mini-4k-instruct-q4.gguf"

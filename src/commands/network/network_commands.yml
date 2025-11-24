@@ -1,0 +1,290 @@
+name: network
+help: Network commands
+group: Network
+expose: always
+
+commands:
+  - name: generate-self-signed-certificate
+    help: Generate a self-signed HTTPS certificate for use in testing
+    dependencies:
+      openssl: Install with either 'sudo apt install libssl-dev' or 'brew install openssl@3'
+    flags:
+      - long: --output
+        help: The file to write the certificate to
+        arg: output
+        required: true
+        completions:
+          - <file>
+      - long: --key-output
+        help: The output file to write the key to
+        arg: key_output
+        required: true
+        completions:
+          - <file>
+      - long: --hostname
+        help: The hostname that the certificate should be created to work with
+        default: localhost
+        arg: hostname
+      - long: --pfx-output
+        help: Output a pfx file as well
+        arg: pfx_output
+        completions:
+          - <file>
+        default: 'false'
+    examples:
+      - dtools network generate-self-signed-certificate --output /etc/dtools/test.csr --key-output /etc/dtools/test.key
+      - |-
+        # Both in one file
+        dtools network generate-self-signed-certificate --output /etc/dtools/test.pem --key-output /etc/dtools/test.pem
+      - |-
+        # Create a pfx file for Radarr
+        dtools network generate-self-signed-certificate --output /etc/dtools/test.crt --key-output /etc/dtools/test.key --hostname 192.168.0.105 --output-pfx /etc/dtools/test.pfx
+
+  - name: https-proxy
+    help: Proxy HTTPS traffic
+    dependencies:
+      socat: Install with 'brew install socat'
+      openssl: Install with either 'sudo apt install libssl-dev' or 'brew install openssl@3'
+    flags:
+      - long: --https-port
+        help: The https port to proxy
+        default: '443'
+        arg: https_port
+
+      - long: --proxy-target-host
+        help: The target host to redirect all https traffic to
+        default: localhost
+        arg: proxy_target_host
+
+      - long: --proxy-target-port
+        help: The port on the target host to send all https traffic to
+        required: true
+        arg: proxy_target_port
+
+      - long: --ssl-certificate
+        help: The SSL certificate to use
+        default: /etc/devtools/dtools.pem
+        arg: ssl_certificate
+        completions:
+          - <file>
+
+  - name: tcp-proxy
+    help: Proxy all TCP traffic with simpleproxy (Debian-based systems only)
+    filters:
+      - debian_based_os
+    dependencies:
+      simpleproxy: Install with 'sudo apt install simpleproxy'
+    flags:
+      - long: --tcp-host
+        help: The host to listen on
+        default: 0.0.0.0
+        arg: tcp_host
+
+      - long: --tcp-port
+        help: The TCP port to listen on
+        required: true
+        arg: tcp_port
+
+      - long: --proxy-target-host
+        help: The target host to redirect all TCP traffic to
+        default: localhost
+        arg: proxy_target_host
+
+      - long: --proxy-target-port
+        help: The target port on the target host to redirect all TCP traffic to
+        required: true
+        arg: proxy_target_port
+    examples:
+      - dtools network tcp-proxy --tcp-host 192.168.0.253 --tcp-port 5432 --proxy-target-host localhost --proxy-target-port 5433
+
+  - name: proxy-with-nginx
+    help: |-
+      Proxy all HTTP and HTTPS requests locally to a remote server using Nginx.
+      This is useful when trying to proxy a remote HTTPS API that requires a specific certificate or hostname.
+    dependencies:
+      nginx: Install with 'brew install nginx'
+    flags:
+      - long: --tcp-port
+        help: The TCP port to listen on
+        arg: tcp_port
+        default: '8080'
+
+      - long: --proxy-target-host
+        help: The target host to redirect all traffic to
+        arg: proxy_target_host
+        required: true
+
+      - long: --proxy-target-protocol
+        help: The protocol on the host that all traffic is redirected to
+        arg: proxy_target_protocol
+        default: http
+        allowed:
+          - http
+          - https
+    examples:
+      - |-
+        # Query with curl 'http://localhost:8081/api/Token', for example
+        dtools network proxy-with-nginx --tcp-port 8081 --proxy-target-host some.api.com --proxy-target-protocol https
+
+  - name: mitm-proxy
+    help: Start a Man-in-the-Middle (MITM) proxy to intercept and log all requests
+    dependencies:
+      mitmproxy: Install with 'brew install --cask mitmproxy'
+    args:
+      - name: domain
+        help: The domain to intercept requests for (regex)
+        required: true
+    flags:
+      - long: --port
+        arg: port
+        help: The local port to run the proxy on
+        default: '8080'
+      - long: --script-file
+        arg: script_file
+        help: The script file to run on all intercepted requests (defaults to simply logging out method, url, headers, and body)
+        completions:
+          - <file>
+          - <directory>
+        validate: file_exists
+    examples:
+      - |-
+        # Run the proxy on port 8080 for all *google*.com domains
+        dtools network mitm-proxy .*google.*\.com
+        # Run a script/service/etc. that will be proxied by MITM proxy
+        export HTTP_PROXY=http://localhost:8080
+        export HTTPS_PROXY=https://localhost:8080
+        export REQUESTS_CA_BUNDLE=~/.mitmproxy/mitmproxy-ca-cert.pem
+        python3 vertex_model_deployment_script.py
+
+  - name: archive-website
+    help: Download an archive an entire website for offline viewing via Kiwix and .zim formats using OpenZim's zimit
+    dependencies:
+      docker: Install with 'dtools install docker'
+    flags:
+      - long: --shm-size
+        help: The size of /dev/shm to allow the container to use
+        arg: shm_size
+        default: 2gb
+      - long: --url
+        arg: url
+        help: The URL to be crawled
+        required: true
+      - long: --name
+        arg: name
+        help: The name of the ZIM file
+        required: true
+      - long: --output
+        arg: output_directory
+        default: '/output'
+        completions:
+          - <directory>
+      - long: --limit
+        help: Limit capture to at most <limit> URLs
+        arg: limit
+      - long: --behaviors
+        help: >-
+          Control which browsertrix behaviors are ran
+          (defaults to 'autoplay,autofetch,siteSpecific', adding 'autoscroll' to the list is possible to automatically scroll the pages and fetch resources which are lazy loaded)
+        arg: behaviors
+        default: 'autoplay,autofetch,siteSpecific'
+      - long: --exclude
+        arg: exclude_regex
+        help: >-
+          Skip URLs that mmatch the regex from crawling. Can be specified multiple times.
+          An example is '--exclude=|(\?q=|signup-landing\?|\?cid=)"', where URLs that contain either '?q=' or
+          'signup-landing?' or '?cid=' will be excluded
+      - long: --workers
+        arg: workers
+        help: Number of crawl workers to run in parallel
+      - long: --wait-until
+        arg: wait_until
+        help: >-
+          Puppeteer setting for how long to wait for page to load. See https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#pagegotourl-options
+          The default is 'load', but for static sites, '--wait-until domcontentloaded' may be used to speed up the crawl (to avoid waiting for ads to load for example).
+        default: 'load'
+      - long: --keep
+        help: If set, keep the WARC files in a temp directory inside the output directory
+    examples:
+      - dtools network archive-website --url URL --name myzimfile
+      - |-
+        # Exclude all video files
+        dtools network archive-website --url URL --name myzimfile --exclude ".*\.(mp4|webm|ogg|mov|avi|mkv)(\?.*)?$"
+      - dtools network archive-website --shm-size 2gb --url 'https://www.niaid.nih.gov' --name niaid-backup --exclude '.*\.(mp4|webm|ogg|mov|avi|mkv|mpeg|tar|gz|zip|rar)(\?.*)?$' --workers 16 --wait-until domcontentloaded --behaviors 'autoplay,autofetch,siteSpecific,autoscroll'
+      - |-
+        # Serve the website locally on port 9090
+        kiwix-serve --port 9090 myzimfile.zim
+
+  - name: warc-2-zim
+    help: Convert a WARC to ZIM format for easier offline viewing using OpenZim's zimit
+    dependencies:
+      docker: Install with 'dtools install docker'
+    flags:
+      - long: --shm-size
+        help: The size of /dev/shm to allow the container to use
+        arg: shm_size
+        default: 2gb
+      - long: --url
+        arg: url
+        help: The URL to be crawled
+        required: true
+      - long: --name
+        arg: name
+        help: The name of the ZIM file
+        required: true
+      - long: --output
+        arg: output_directory
+        default: '/output'
+        completions:
+          - <directory>
+      - long: --limit
+        help: Limit capture to at most <limit> URLs
+        arg: limit
+      - long: --behaviors
+        help: >-
+          Control which browsertrix behaviors are ran
+          (defaults to 'autoplay,autofetch,siteSpecific', adding 'autoscroll' to the list is possible to automatically scroll the pages and fetch resources which are lazy loaded)
+        arg: behaviors
+        default: 'autoplay,autofetch,siteSpecific'
+      - long: --exclude
+        arg: exclude_regex
+        help: >-
+          Skip URLs that match the regex from crawling. Can be specified multiple times.
+          An example is '--exclude=|(\?q=|signup-landing\?|\?cid=)"', where URLs that contain either '?q=' or
+          'signup-landing?' or '?cid=' will be excluded
+      - long: --workers
+        arg: workers
+        help: Number of crawl workers to run in parallel
+      - long: --wait-until
+        arg: wait_until
+        help: >-
+          Puppeteer setting for how long to wait for page to load. See https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#pagegotourl-options
+          The default is 'load', but for static sites, '--wait-until domcontentloaded' may be used to speed up the crawl (to avoid waiting for ads to load for example).
+        default: 'load'
+      - long: --keep
+        help: If set, keep the WARC files in a temp directory inside the output directory
+    examples:
+      - dtools network warc-2-zim --url URL --name myzimfile
+      - |-
+        # Exclude all video files
+        dtools network warc-2-zim --url URL --name myzimfile --exclude ".*\.(mp4|webm|ogg|mov|avi|mkv)(\?.*)?$"
+
+  - name: mermaid-api
+    help: Start a local API to generate Mermaid diagrams
+    dependencies:
+      docker: Install with 'dtools install docker'
+    args:
+      - name: port
+        help: The port to run the API on
+        default: '8087'
+        validate: integer
+    examples:
+      - |-
+        curl --location --request POST 'http://localhost:8087/generate' \
+          --header 'Content-Type: text/plain' \
+          --data-raw 'graph LR
+
+              A-->B
+              B-->C
+              C-->D
+              C-->F
+          '

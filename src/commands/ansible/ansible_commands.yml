@@ -1,0 +1,34 @@
+name: ansible
+help: Ansible commands
+group: Ansible
+expose: always
+dependencies:
+  ansible: Install with 'dtools install ansible'
+
+commands:
+  - name: encrypt-string
+    help: Encrypt the plaintext string given in the prompt, prompting the user for the vault password, with Ansible Vault
+    flags:
+      - long: --copy-output-to-clipboard
+        short: -c
+        help: Instead of outputting the encrypted secret to stdout, copy it to your clipboard
+    examples:
+      - dtools ansible encrypt-string -c
+
+  - name: decrypt-variable
+    help: Decrypt a variable encrypted with Ansible Vault
+    flags:
+      - long: --variable
+        short: -v
+        arg: variable
+        help: The name of the variable you wish to decrypt
+        required: true
+      - long: --file
+        short: -f
+        arg: file
+        required: true
+        help: The inventory file/playbook file that the variable lives in
+        completions:
+          - <file>
+    examples:
+      - dtools ansible decrypt-variable -v some_variable -f inventories/local/group_vars/local.yml

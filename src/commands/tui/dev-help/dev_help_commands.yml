@@ -1,0 +1,14 @@
+name: dev-help
+help: TUIs for helping devs get help or solve problems
+group: Dev Help TUIs
+
+commands:
+  - name: stack-overflow
+    help: StackOverflow Query Engine (so)
+    dependencies:
+      so: See 'https://github.com/samtay/so'
+
+  - name: wiki
+    help: Wikipedia TUI (wiki-tui)
+    dependencies:
+      wiki-tui: See 'https://wiki-tui.net/latest/'

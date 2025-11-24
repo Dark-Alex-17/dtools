@@ -1,0 +1,14 @@
+name: git
+help: Git commands
+group: Git
+expose: always
+
+commands:
+  - name: search-history
+    help: Search all previous tracked files for a given string to see all changes involving the specified string
+    args:
+      - name: search-string
+        help: The string to search all git history for
+        required: true
+    examples:
+      - dtools git search-history 'energy_required'

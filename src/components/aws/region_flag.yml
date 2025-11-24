@@ -1,0 +1,7 @@
+long: --region
+short: -r
+arg: region
+default: "us-east-1"
+help: The AWS region to use
+allowed:
+  import: src/components/aws/allowed_regions.yml

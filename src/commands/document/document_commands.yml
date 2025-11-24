@@ -1,0 +1,77 @@
+name: document
+help: Commands for manipulating documents
+group: Documents
+expose: always
+
+commands:
+  - name: convert
+    help: Convert any given document into any other supported format using pandoc
+    dependencies:
+      pandoc: Install with 'brew install pandoc'
+    args:
+      - name: file
+        required: true
+        help: The file to convert
+    flags:
+      - long: --source-format
+        help: The format of the source file
+        required: true
+        arg: source_format
+        allowed:
+          import: src/components/documents/allowed_pandoc_source_formats.yml
+      - long: --target-format
+        help: The target format of the output file
+        required: true
+        arg: target_format
+        allowed:
+          import: src/components/documents/allowed_pandoc_target_formats.yml
+      - long: --output-file
+        arg: output_file
+        help: The output file with the extension (defaults to <working_directory>/<file>.$<target_format>)
+        completions:
+          - <file>
+          - <directory>
+    completions:
+      - <file>
+      - <directory>
+
+  - name: merge-pdf
+    help: Merge a list of PDFs into a single PDF file
+    dependencies:
+      pdftk: Install with 'brew install pdftk-java'
+    args:
+      - name: output-file
+        help: The name of the output PDF file name
+        required: true
+    flags:
+      - long: --input-file
+        short: -i
+        arg: input_file
+        help: An input file to merge into a single PDF
+        repeatable: true
+        completions:
+          - <file>
+          - <directory>
+    completions:
+      - <file>
+      - <directory>
+
+  - name: decrypt-pdf
+    help: Decrypt a PDF so it can be manipulated via CLI tools
+    dependencies:
+      qpdf: Install with 'brew install qpdf'
+    args:
+      - name: input-file
+        help: The PDF you wish to decrypt
+        required: true
+    flags:
+      - long: --output-file
+        arg: output_file
+        required: true
+        help: The name of the output decrypted PDF file
+        completions:
+          - <file>
+          - <directory>
+    completions:
+      - <file>
+      - <directory>

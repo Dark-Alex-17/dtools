@@ -1,0 +1,217 @@
+name: vm
+help: Virtual Machine commands
+group: Virtual Machine
+expose: always
+
+commands:
+  - name: windows
+    help: Start a windows VM and then open a FreeRDP session to the container. The web version is also available at http://localhost:8006
+    dependencies:
+      xfreerdp3: See 'https://github.com/FreeRDP/FreeRDP/wiki/PreBuilds'
+    flags:
+      - long: --persistent-dir-prefix
+        arg: persistent_dir_prefix
+        help: |
+          Specify the persistence directory ($HOME/.vm/windows/<DIR>) to load/wipe the VM from.
+          Defaults to the version (e.g. $HOME/.vm/windows/11)
+        needs: [--persistent]
+        completions:
+          - $(ls -1 $HOME/.vm/windows/)
+      - long: --persistent
+        help: Persist the VM data to disk (persists to $HOME/.vm/windows)
+      - long: --wipe-persistent-data
+        help: Wipe any data persisted between sessions for the given Windows version
+      - long: --disk-size
+        help: The disk size of the VM's drive in GB
+        arg: disk_size
+        default: "64"
+        validate: integer
+      - long: --ram-size
+        help: The RAM size of the VM's RAM in GB
+        arg: ram_size
+        default: "4"
+        validate: integer
+      - long: --cpu-cores
+        help: The number of CPU cores the VM is allowed to use
+        arg: cpu_cores
+        default: "2"
+        validate: integer
+      - long: --share-directory
+        help: The directory to share with the VM (In Windows, this is the Network#host.lan machine)
+        arg: share_directory
+        default: "."
+        completions:
+          - <directory>
+      - long: --version
+        help: The version of Windows to start
+        arg: version
+        default: "11"
+        allowed:
+          - "11"
+          - "11l"
+          - "11e"
+          - "10"
+          - "10l"
+          - "10e"
+          - "8e"
+          - "7e"
+          - "ve"
+          - "xp"
+          - "2025"
+          - "2022"
+          - "2019"
+          - "2016"
+          - "2012"
+          - "2008"
+          - "2003"
+
+  - name: linux
+    help: Start a Linux VM that's available at http://localhost:8006 and via SSH on port 2222
+    dependencies:
+      remmina: See 'https://remmina.org/how-to-install-remmina/'
+      xfreerdp3: See 'https://github.com/FreeRDP/FreeRDP/wiki/PreBuilds'
+    filters:
+      - linux_image_url_or_dist_is_defined
+    flags:
+      - long: --persistent-dir-prefix
+        arg: persistent_dir_prefix
+        help: |
+          Specify the persistence directory ($HOME/.vm/linux/<DIR>) to load/wipe the VM from.
+          Defaults to the image (e.g. $HOME/.vm/linux/ubuntu)
+        needs: [--persistent]
+        completions:
+          - $(ls -1 $HOME/.vm/linux/)
+      - long: --persistent
+        help: Persist the VM data to disk (persists to $HOME/.vm/linux)
+      - long: --wipe-persistent-data
+        help: Wipe any data persisted between sessions for the given Linux version
+      - long: --no-gui
+        help: Do not start a VNC connection to the image
+        conflicts: [--use-rdp]
+      - long: --use-rdp
+        help: Start an RDP connection to the container once it starts (Assumes an RDP server runs at start in the container)
+        conflicts: [--no-gui]
+      - long: --rdp-user
+        help: Specify the RDP user to use when connecting to the container
+        arg: rdp_user
+        default: $USER
+        needs: [--use-rdp]
+      - long: --rdp-password
+        help: Specify the RDP password to use when connecting to the container
+        arg: rdp_password
+        default: admin
+        needs: [--use-rdp]
+      - long: --disk-size
+        help: The disk size of the VM's drive in GB
+        arg: disk_size
+        default: "128"
+        validate: integer
+      - long: --ram-size
+        help: The RAM size of the VM's RAM in GB
+        arg: ram_size
+        default: "8"
+        validate: integer
+      - long: --cpu-cores
+        help: The number of CPU cores the VM is allowed to use
+        arg: cpu_cores
+        default: "4"
+        validate: integer
+      - long: --share-directory
+        help: The directory to share with the VM (Access by running 'mount -t 9p -o trans=virtio shared /mnt/shared' in the container)
+        arg: share_directory
+        default: "."
+        completions:
+          - <directory>
+      - long: --dist
+        help: The Linux distribution to start
+        arg: distribution
+        allowed:
+          - "alma"
+          - "alpine"
+          - "arch"
+          - "cachy"
+          - "centos"
+          - "debian"
+          - "fedora"
+          - "gentoo"
+          - "kali"
+          - "kubuntu"
+          - "mint"
+          - "manjaro"
+          - "mx"
+          - "nixos"
+          - "suse"
+          - "oracle"
+          - "rocky"
+          - "slack"
+          - "tails"
+          - "ubuntu"
+          - "ubuntus"
+          - "xubuntu"
+        conflicts: [--image-url]
+      - long: --image-url
+        help: |-
+          Boot using a custom image at the specified URL.
+          Supported formats are:
+
+          .img
+          .raw
+          .iso
+          .qcow2
+          .vmdk
+          .vhd
+          .vhdx
+          .vdi
+
+          It will also accept files such as .img.gz, .qcow2.xz, .iso.zip, and many more because it will automatically extract compressed files
+        arg: image_url
+        conflicts: [--dist]
+
+  - name: mac
+    help: Start a MacOS VM that's available at http://localhost:8006
+    dependencies:
+      remmina: See 'https://remmina.org/how-to-install-remmina/'
+    flags:
+      - long: --persistent-dir-prefix
+        arg: persistent_dir_prefix
+        help: |
+          Specify the persistence directory ($HOME/.vm/mac/<DIR>) to load/wipe the VM from.
+          Defaults to the version (e.g. $HOME/.vm/mac/15)
+        needs: [--persistent]
+        completions:
+          - $(ls -1 $HOME/.vm/mac/)
+      - long: --persistent
+        help: Persist the VM data to disk (persists to $HOME/.vm/mac)
+      - long: --wipe-persistent-data
+        help: Wipe any data persisted between sessions for the given Mac version
+      - long: --disk-size
+        help: The disk size of the VM's drive in GB
+        arg: disk_size
+        default: "64"
+        validate: integer
+      - long: --ram-size
+        help: The RAM size of the VM's RAM in GB
+        arg: ram_size
+        default: "4"
+        validate: integer
+      - long: --cpu-cores
+        help: The number of CPU cores the VM is allowed to use
+        arg: cpu_cores
+        default: "2"
+        validate: integer
+      - long: --share-directory
+        help: The directory to share with the VM (Access by running 'mount -S mount_9p shared' in the container; Then it's available under Finder -> Go -> Computer)
+        arg: share_directory
+        default: "."
+        completions:
+          - <directory>
+      - long: --version
+        help: The version of MacOS to start
+        arg: version
+        default: "13"
+        allowed:
+          - "15"
+          - "14"
+          - "13"
+          - "12"
+          - "11"

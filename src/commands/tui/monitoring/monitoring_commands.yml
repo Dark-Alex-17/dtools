@@ -1,0 +1,19 @@
+name: monitoring
+help: TUIs for monitoring systems
+group: Monitoring TUIs
+
+commands:
+  - name: system-monitor
+    help: Interactive process viewer (btop)
+    dependencies:
+      btop: See 'https://github.com/aristocratos/btop'
+
+  - name: pihole-monitor
+    help: Monitor your PiHole server (pimon)
+    dependencies:
+      pimon: See 'https://github.com/Scratchcat1/pimon'
+
+  - name: kernel-monitor
+    help: Linux kernel manager and activity monitor (kmon)
+    dependencies:
+      kmon: See 'https://github.com/orhun/kmon'

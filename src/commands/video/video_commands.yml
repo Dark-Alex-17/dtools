@@ -1,0 +1,106 @@
+name: video
+help: Video commands
+group: Video
+expose: always
+dependencies:
+
+commands:
+  - name: rip-audio
+    help: Rip the audio from a video file.
+    dependencies:
+      ffmpeg: Install with 'brew install ffmpeg'
+    args:
+      - name: video_file
+        help: The video file to rip audio from
+        required: true
+    completions:
+      - <file>
+    flags:
+      - long: --title
+        help: >-
+          The title of the track to add to metadata.
+
+          This defaults to being the same as the name of the output file.
+        arg: title
+      - long: --output-file
+        help: The name of the output file (excluding the file extension).
+        arg: output_file
+        completions:
+          - <directory>
+        required: true
+
+  - name: youtube
+    help: Download YouTube videos
+    dependencies:
+      youtube_dl: See 'https://github.com/ytdl-org/youtube-dl'
+    args:
+      - name: url
+        help: The URL of the video you wish to download
+        required: true
+    flags:
+      - long: --audio-only
+        help: Download only the audio from a YouTube video
+      - long: --playlist
+        help: Indicates that the specified URL is a playlist
+
+  - name: split-scenes
+    help: Automatically detect and split scenes in the specified video file
+    dependencies:
+      scenedetect: See 'https://www.scenedetect.com/'
+      ffmpeg: Install with 'brew install ffmpeg'
+      ffprobe: See 'https://ffmpeg.org/ffprobe.html'
+    args:
+      - name: video_file
+        help: The video file to detect scenes in and to split into separate video files
+        required: true
+    flags:
+      - long: --content-threshold
+        help: The threshold for content detection
+        default: "130"
+        arg: content_threshold
+      - long: --fade-threshold
+        help: The threshold for fade in/out detection
+        default: "5"
+        arg: fade_threshold
+      - long: --keep-duration
+        help: The duration in seconds that a video file must be in order to be kept after splitting
+        default: "8"
+        arg: keep_duration
+    completions:
+      - <file>
+    examples:
+      - dtools split-scenes file.mp4 --content-threshold 132 --fade-threshold 2
+      - dtools split-scenes file.mp4 --content-threshold 130 --fade-threshold 5
+      - dtools split-scenes file.mp4 --content-threshold 95 --fade-threshold 15
+      - dtools split-scenes file.mp4 --content-threshold 115 --fade-threshold 15
+
+  - name: duration
+    help: Get the duration of a video file
+    dependencies:
+      ffprobe: See 'https://ffmpeg.org/ffprobe.html'
+    args:
+      - name: video_file
+        help: The video file to get the duration of
+        required: true
+    completions:
+      - <file>
+
+  - name: boost-audio
+    help: Boost the audio of the specified video file
+    dependencies:
+      ffmpeg: Install with 'brew install ffmpeg'
+    args:
+      - name: video_file
+        help: The video file whose audio you want to boost
+        required: true
+    completions:
+      - <file>
+    flags:
+      - long: --multiplier
+        help: The amount to multiply the audio value by
+        default: "2.0"
+        arg: multiplier
+      - long: --output-file
+        help: Specify the output file name (including the file extension)
+        arg: output_file
+        required: true

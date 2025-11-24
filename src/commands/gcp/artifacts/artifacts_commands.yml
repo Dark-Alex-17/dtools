@@ -1,0 +1,32 @@
+name: artifacts
+help: GCP Artifact Registry commands
+group: Artifact Registry
+expose: always
+dependencies:
+  gcloud: Install the latest version following the instructions at 'https://docs.cloud.google.com/sdk/docs/install'
+  jq: Install using 'brew install jq'
+
+commands:
+  - name: list-repositories
+    help: List all repositories in artifact registry for the specified project and location
+    filters:
+      - project_and_location_variables_set_with_flags
+    flags:
+      - import: src/components/gcp/project_flag.yml
+      - import: src/components/gcp/location_flag.yml
+
+  - name: list-images
+    help: List all images contained with the specified artifact registry repository
+    args:
+      - name: repository_name
+        required: true
+        help: The GCP docker repository whose images you wish to list
+    filters:
+      - project_and_location_variables_set_with_flags
+    flags:
+      - import: src/components/gcp/project_flag.yml
+      - import: src/components/gcp/location_flag.yml
+      - long: --detailed
+        help: Output the images with full details in JSON format
+    examples:
+      - dtools gcp artifacts list-images serving-docker

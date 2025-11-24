@@ -1,0 +1,90 @@
+name: development
+help: TUIs for development related tools
+group: Development TUIs
+
+commands:
+  - name: git
+    help: Fast terminal UI for git (gitui)
+    dependencies:
+      gitui: See 'https://github.com/gitui-org/gitui'
+
+  - name: jira
+    help: Jira terminal UI (jirust)
+    dependencies:
+      jirust: See 'https://github.com/Code-Militia/jirust'
+
+  - name: readme
+    help: Render markdown on the CLI (glow)
+    dependencies:
+      glow: See 'https://github.com/charmbracelet/glow'
+
+  - name: tail-logs
+    help: Log file navigator (lnav)
+    dependencies:
+      lnav: See 'https://lnav.readthedocs.io/en/latest/'
+
+  - name: drft
+    help: View a git diff file-by-file with a tree viewer (drft)
+    dependencies:
+      drft: See 'https://codeberg.org/nightsail/drft'
+    examples:
+      - git diff | drft
+
+  - name: wrkflw
+    help: Validate and execute GitHub workflows locally (wrkflw)
+    dependencies:
+      wrkflw: See 'https://github.com/bahdotsh/wrkflw'
+
+  - name: gama
+    help: Manage your GitHub Actions from the terminal (gama)
+    dependencies:
+      actions: See 'https://github.com/termkit/gama'
+
+  - name: ecs
+    help: Easily manage AWS ECS resources (e1s)
+    dependencies:
+      e1s: See 'https://github.com/keidarcy/e1s'
+
+  - name: openapi
+    help: A TUI for viewing an OpenAPI spec like Swagger UI (openapi-tui)
+    dependencies:
+      openapi-tui: See 'https://github.com/zaghaghi/openapi-tui'
+
+  - name: gcs
+    help: A TUI for browsing Google Cloud Storage (burf)
+    dependencies:
+      burf: See 'https://github.com/razeghi71/burf'
+    args:
+      - name: gcs_url
+        help: The GCS URL to browse
+        required: true
+    examples:
+      - burf gs://prod
+
+  - name: prs
+    help: View GitHub pull requests in a TUI (prs)
+    dependencies:
+      prs: See 'https://github.com/dhth/prs'
+
+  - name: s3
+    help: TUI explorer application for Amazon S3 (stu)
+    dependencies:
+      stu: See 'https://lusingander.github.io/stu/'
+
+  - name: terraform
+    help: A terraform and terragrunt TUI (pug)
+    dependencies:
+      pug: See 'https://github.com/leg100/pug'
+    flags:
+      - long: --terraform
+        help: Use Terraform instead of Terragrunt
+
+  - name: journal
+    help: View and manage systemd journal logs (lazyjournal)
+    dependencies:
+      lazyjournal: See 'https://github.com/Lifailon/lazyjournal'
+
+  - name: multi-host-log-viewer
+    help: Fast, remote-first, multi-host TUI log viewer with timeline histogram and no central server (nerdlog)
+    dependencies:
+      nerdlog: See 'https://github.com/dimonomid/nerdlog'

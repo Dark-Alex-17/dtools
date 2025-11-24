@@ -1,0 +1,5 @@
+long: --hf-repo
+short: -r
+arg: hf_repo
+help: The Hugging Face repository to use
+default: "microsoft/Phi-3-mini-4k-instruct-gguf"

@@ -1,0 +1,28 @@
+name: rds
+help: RDS commands
+group: RDS
+expose: always
+dependencies:
+  aws: Install the latest version following the instructions at 'https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html'
+  jq: Install with 'brew install jq'
+
+commands:
+  - name: list-db-instances
+    help: List all RDS DB instances for the given account by their name
+    filters:
+      - profile_and_region_variables_set_with_flags
+    flags:
+      - import: src/components/aws/profile_flag.yml
+      - import: src/components/aws/region_flag.yml
+
+  - name: fetch-db-connection-details
+    help: Fetch the connection details for the given RDS DB instance
+    filters:
+      - profile_and_region_variables_set_with_flags
+    flags:
+      - import: src/components/aws/profile_flag.yml
+      - import: src/components/aws/region_flag.yml
+    args:
+      - name: db_instance
+        required: true
+        help: The RDS DB instance name

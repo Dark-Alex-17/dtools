@@ -1,0 +1,15 @@
+- instance-id
+- instance-type
+- private-dns-name
+- private-ip-address
+- public-dns-name
+- subnet-id
+- vpc-id
+- tags
+- launch-time
+- availability-zone
+- state
+- architecture
+- instance-profile
+- security-groups
+- os

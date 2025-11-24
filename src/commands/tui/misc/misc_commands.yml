@@ -1,0 +1,107 @@
+name: misc
+help: TUIs for miscellaneous things
+group: Miscellaneous TUIs
+
+commands:
+  - name: notes
+    help: Terminal-based Joplin client for notes (joplin)
+    dependencies:
+      joplin: See 'https://joplinapp.org/help/apps/terminal/'
+
+  - name: presentation
+    help: Terminal-based presentations using Pandoc (patat)
+    dependencies:
+      patat: See 'https://github.com/jaspervdj/patat'
+
+  - name: dev-chat
+    help: A custom SSH server that takes you to a chat instead of a shell prompt (ssh nickname@devzat.hackclub.com)
+    args:
+      - name: nickname
+        required: true
+        help: Nickname to use when joining the chat
+
+  - name: file-manager
+    help: Terminal file manager (nnn)
+    dependencies:
+      nnn: See 'https://github.com/jarun/nnn'
+
+  - name: screensaver
+    help: A terminal screensaver (ttysvr)
+    dependencies:
+      ttysvr: See 'https://github.com/cxreiff/ttysvr'
+    examples:
+      - ttysvr bubbles
+      - ttysvr logo dvd
+      - ttysvr logo tty
+      - ttysvr maze brick
+      - ttysvr maze hedge
+      - |-
+        # Run the screensaver after DELAY of seconds
+        # of inactivity in the current shell session
+        eval `ttysvr [VARIANT] --init [DELAY]`
+      - |-
+        # Cancel the screensaver in current shell session
+        eval `ttysvr --cancel`
+
+  - name: weather
+    help: Displays the weather (wego)
+    dependencies:
+      wego: See 'https://github.com/schachmat/wego'
+
+  - name: linutil
+    help: A collection of utilities for Linux (linutil)
+    dependencies:
+      linutil: See 'https://github.com/ChrisTitusTech/linutil'
+
+  - name: slack
+    help: A terminal-based Slack client (slack-term)
+    dependencies:
+      slack-term: See 'https://github.com/jpbruinsslot/slack-term'
+
+  - name: youtube-music
+    help: Play YouTube Music from the terminal (ytermusic)
+    dependencies:
+      ytermusic: See 'https://github.com/ccgauche/ytermusic'
+
+  - name: youtube-music-2
+    help: Play YouTube Music from the terminal (ytui_music)
+    dependencies:
+      ytui_music: See 'https://github.com/sudipghimire533/ytui-music'
+
+  - name: jellyfin
+    help: Play music from your Jellyfin server in the terminal (jellyfin-tui)
+    dependencies:
+      jellyfin-tui: See 'https://github.com/dhonus/jellyfin-tui'
+
+  - name: visualizations
+    help: Audio visualizations in the terminal (vis)
+    dependencies:
+      vis: See 'https://github.com/PosixAlchemist/cli-visualizer#'
+
+  - name: visualizations-2
+    help: Audio visualizations in the terminal (cava)
+    dependencies:
+      cava: See 'https://github.com/karlstav/cava'
+
+  - name: find-and-replace
+    help: Interactive find and replace in the terminal (scooter)
+    dependencies:
+      scooter: See 'https://github.com/thomasschafer/scooter'
+
+  - name: ascii-theater
+    help: Watch movies in your terminal with ASCII art! (ssh into watch.ascii.theater)
+
+  - name: calendar
+    help: View your calendars in the terminal (calcure)
+    dependencies:
+      calcure: See 'https://anufrievroman.gitbook.io/calcure'
+
+  - name: piano
+    help: A piano in your terminal (upiano)
+    dependencies:
+      upiano: See 'https://github.com/eliasdorneles/upiano'
+
+  - name: servarr
+    help: A TUI and CLI for managing *arr servers (managarr)
+    dependencies:
+      managarr: See 'https://github.com/Dark-Alex-17/managarr'

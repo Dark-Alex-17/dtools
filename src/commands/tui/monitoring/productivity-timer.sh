@@ -1,0 +1,1 @@
+pt bootup && pt tui

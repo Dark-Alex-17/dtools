@@ -1,0 +1,45 @@
+name: java
+help: Java commands
+group: Java
+expose: always
+dependencies:
+  java: Install with 'dtools install java'
+
+commands:
+  - name: set-version
+    help: Sets the system-wide Java version
+
+    args:
+      - name: version
+        required: true
+        help: The Java version to use
+        allowed:
+          - '8'
+          - '11'
+          - '17'
+          - '21'
+
+    examples:
+      - dtools java set-version 17
+      
+  - name: analyze-with-sonar
+    help: Perform static code analysis for the current directory's Java project with SonarQube
+    filters:
+      - maven_or_gradle_installed
+    flags:
+      - long: --sonar-url
+        short: -u
+        arg: sonar_url
+        help: The SonarQube server URL to use for analysis
+        required: true
+      - long: --sonar-login
+        short: -l
+        arg: sonar_login
+        help: The SonarQube login token to use for analysis
+        required: true
+      - long: --sonar-project-key
+        short: -k
+        arg: sonar_project_key
+        help: The SonarQube project key to use for analysis
+        required: true
+    
