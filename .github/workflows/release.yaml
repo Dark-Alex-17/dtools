@@ -1,0 +1,85 @@
+name: Create release
+
+permissions:
+  pull-requests: write
+  contents: write
+
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+*
+
+jobs:
+  publish-github-release:
+    name: build-release
+    runs-on: ubuntu-latest
+    outputs:
+      rc: ${{ steps.check-tag.outputs.rc }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Check Tag
+        id: check-tag
+        shell: bash
+        run: |
+          ver=${GITHUB_REF##*/}
+          echo "VERSION=$ver" >> $GITHUB_OUTPUT
+          if [[ "$ver" =~ [0-9]+.[0-9]+.[0-9]+$ ]]; then
+            echo "rc=false" >> $GITHUB_OUTPUT
+          else
+            echo "rc=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build Archive
+        shell: bash
+        id: package
+        run: |
+          set -euxo pipefail
+
+          bin=${GITHUB_REPOSITORY##*/}
+          dist_dir=`pwd`/dist
+          name=$bin-${{ env.VERSION }}
+
+          mkdir $dist_dir
+          cp $executable $dist_dir
+          cd $dist_dir
+
+          archive=$dist_dir/$name.tar.gz
+          sha=$dist_dir/$name.sha256
+          tar -czf $archive *
+          shasum -a 256 $archive > $sha
+          echo "archive=dist/$name.tar.gz" >> $GITHUB_OUTPUT
+          echo "sha=dist/$name.sha256" >> $GITHUB_OUTPUT
+          echo "bin=dist/$bin" >> $GITHUB_OUTPUT
+
+      - name: Publish Archive and SHA
+        if: env.ACT != 'true'
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            ${{ steps.package.outputs.archive }}
+            ${{ steps.package.outputs.sha }}
+            ${{ steps.package.outputs.bin }}
+          tag_name: v${{ env.VERSION }}
+          name: "v${{ env.VERSION }}"
+          prerelease: ${{ steps.check-tag.outputs.rc == 'true' }}
+
+      - name: Add artifacts
+        shell: bash
+        run: |
+          [[ -d artifacts ]] || mkdir -p artifacts
+          cp ${{ steps.package.outputs.archive }} artifacts/
+          cp ${{ steps.package.outputs.sha }} artifacts/
+          cp ${{ steps.package.outputs.bin }} artifacts/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-v${{ env.VERSION }}
+          path: artifacts
+          overwrite: true
