@@ -13,6 +13,8 @@ jobs:
   publish-github-release:
     name: build-release
     runs-on: ubuntu-latest
+    outputs:
+      rc: ${{ steps.check-tag.outputs.rc }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -34,12 +36,14 @@ jobs:
       - name: Build Archive
         shell: bash
         id: package
+        env:
+          version: ${{ steps.check-tag.outputs.version }}
         run: |
           set -euxo pipefail
 
           bin=${GITHUB_REPOSITORY##*/}
           dist_dir=`pwd`/dist
-          name=$bin-${{ steps.check-tag.outputs.version }}
+          name=$bin-$version
 
           mkdir $dist_dir
           cp $executable $dist_dir
