@@ -1,4 +1,8 @@
 # Devtools
+
+![Release](https://img.shields.io/github/v/release/Dark-Alex-17/dtools?color=%23c694ff)
+[![GitHub Downloads](https://img.shields.io/github/downloads/Dark-Alex-17/dtools/total.svg?label=GitHub%20downloads)](https://github.com/Dark-Alex-17/dtools/releases)
+
 **Devtools (`dtools`)** is a comprehensive CLI utility that consolidates reusable development scripts, tools, and 
 references into a single, easy-to-use interface. Built with the [Bashly](https://github.com/DannyBen/bashly) framework, it serves multiple purposes:
 
