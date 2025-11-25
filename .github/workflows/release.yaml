@@ -13,8 +13,6 @@ jobs:
   publish-github-release:
     name: build-release
     runs-on: ubuntu-latest
-    outputs:
-      rc: ${{ steps.check-tag.outputs.rc }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -26,7 +24,7 @@ jobs:
         shell: bash
         run: |
           ver=${GITHUB_REF##*/}
-          echo "VERSION=$ver" >> $GITHUB_OUTPUT
+          echo "version=$ver" >> $GITHUB_OUTPUT
           if [[ "$ver" =~ [0-9]+.[0-9]+.[0-9]+$ ]]; then
             echo "rc=false" >> $GITHUB_OUTPUT
           else
@@ -41,7 +39,7 @@ jobs:
 
           bin=${GITHUB_REPOSITORY##*/}
           dist_dir=`pwd`/dist
-          name=$bin-${{ env.VERSION }}
+          name=$bin-${{ steps.check-tag.outputs.version }}
 
           mkdir $dist_dir
           cp $executable $dist_dir
@@ -65,8 +63,8 @@ jobs:
             ${{ steps.package.outputs.archive }}
             ${{ steps.package.outputs.sha }}
             ${{ steps.package.outputs.bin }}
-          tag_name: v${{ env.VERSION }}
-          name: "v${{ env.VERSION }}"
+          tag_name: v${{ steps.check-tag.outputs.version }}
+          name: "v${{ steps.check-tag.outputs.version }}"
           prerelease: ${{ steps.check-tag.outputs.rc == 'true' }}
 
       - name: Add artifacts
