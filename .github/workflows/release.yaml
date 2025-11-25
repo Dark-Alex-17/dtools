@@ -71,6 +71,7 @@ jobs:
           tag_name: v${{ steps.check-tag.outputs.version }}
           name: "v${{ steps.check-tag.outputs.version }}"
           prerelease: ${{ steps.check-tag.outputs.rc == 'true' }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Add artifacts
         shell: bash
