@@ -1,6 +1,6 @@
 #!/bin/bash
 if ! [[ -L "$HOME/.local/bin/dtools" ]]; then
-  sudo ln -s "$PWD/dtools" "$HOME/.local/bin/dtools"
+  wget -O "$HOME/.local/bin/dtools" "https://github.com/Dark-Alex-17/dtools/releases/latest/download/dtools"
 fi
 
 # shellcheck disable=SC2016

@@ -24,13 +24,11 @@ For any and all issues, don't hesitate to create a bug report or feature request
 To install the `dtools` script, run the following command:
 
 ```shell
-git clone git@github.com:Dark-Alex-17/devtools.git ~/.local/share/devtools && pushd ~/.local/share/devtools && make install && popd
+curl -fsSL https://raw.githubusercontent.com/Dark-Alex-17/dtools/refs/heads/main/scripts/install.sh | bash
 ```
 
-This will install the repo to `~/.local/share/devtools` and run the `make install` command to build and install the
-script to your local bin directory (usually `~/.local/bin`).
-
-This will also install the tab completions to your `~./bashrc`, so be sure to `source ~/.bashrc` to enable the completions.
+This will install `dtools` to `~/.local/bin/dtools`, and install the tab completions to your `~./bashrc`. So be sure to 
+`source ~/.bashrc` to enable the completions.
 
 Just run `dtools --help` to get started!
 
