@@ -58,11 +58,9 @@ jobs:
           echo "sha=dist/$name.sha256" >> $GITHUB_OUTPUT
           echo "bin=dist/$bin" >> $GITHUB_OUTPUT
 
-      - name: Publish Archive and SHA
+      - name: Publish Archive, binary and SHA
         if: env.ACT != 'true'
         uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: |
             ${{ steps.package.outputs.archive }}
@@ -71,7 +69,7 @@ jobs:
           tag_name: v${{ steps.check-tag.outputs.version }}
           name: "v${{ steps.check-tag.outputs.version }}"
           prerelease: ${{ steps.check-tag.outputs.rc == 'true' }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.DTOOLS_GITHUB_TOKEN }}
 
       - name: Add artifacts
         shell: bash
@@ -84,6 +82,6 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: artifacts-v${{ env.VERSION }}
+          name: artifacts-v${{ steps.check-tag.outputs.version }}
           path: artifacts
           overwrite: true
