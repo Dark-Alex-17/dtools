@@ -10,6 +10,17 @@ declare cpu_cores="${args[--cpu-cores]}"
 declare share_directory="${args[--share-directory]}"
 # shellcheck disable=SC2154
 declare persistent_dir_prefix="${args[--persistent-dir-prefix]:-$version}"
+# shellcheck disable=SC2154
+declare usb="${args[--usb]}"
+declare -a flags=()
+
+if [[ -n "$usb" ]]; then
+  vendor_id="$(udevadm info --query=all --name="$usb" | grep ID_VENDOR_ID | awk -F= '{print $2}')"
+  product_id="$(udevadm info --query=all --name="$usb" | grep ID_MODEL_ID | awk -F= '{print $2}')"
+  flags+=("--device=/dev/bus/usb")
+  flags+=("-e")
+  flags+=(ARGUMENTS="-device usb-host,vendorid=0x${vendor_id},productid=0x${product_id}")
+fi
 
 if [[ "${args[--wipe-persistent-data]}" == 1 ]]; then
   declare persistent_data_dir="$HOME/.vm/windows/$persistent_dir_prefix"
@@ -40,6 +51,7 @@ if [[ "${args[--persistent]}" == 1 ]]; then
     -v "$share_directory:/data" \
     --cap-add NET_ADMIN \
     --stop-timeout 120 \
+    "${flags[@]}" \
     -d \
     dockurr/windows)
 else
@@ -55,6 +67,7 @@ else
     -v "$share_directory:/data" \
     --cap-add NET_ADMIN \
     --stop-timeout 120 \
+    "${flags[@]}" \
     -d \
     dockurr/windows)
 fi

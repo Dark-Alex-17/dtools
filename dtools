@@ -4910,6 +4910,10 @@ dtools_vm_windows_usage() {
 		printf "    %s\n" "Default: ."
 		echo
 
+		printf "  %s\n" "$(magenta "--usb USB")"
+		printf "    The USB device to mount into the VM (i.e. '/dev/sde')\n"
+		echo
+
 		printf "  %s\n" "$(magenta "--version VERSION")"
 		printf "    The version of Windows to start\n"
 		printf "    %s\n" "Allowed: 11, 11l, 11e, 10, 10l, 10e, 8e, 7e, ve, xp, 2025, 2022, 2019, 2016, 2012, 2008, 2003"
@@ -7874,7 +7878,7 @@ send_completions() {
 	echo $'      ;;'
 	echo $''
 	echo $'    \'vm windows\'*)'
-	echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_dtools_completions_filter "--cpu-cores --disk-size --help --persistent --persistent-dir-prefix --ram-size --share-directory --version --wipe-persistent-data -h")" -- "$cur")'
+	echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_dtools_completions_filter "--cpu-cores --disk-size --help --persistent --persistent-dir-prefix --ram-size --share-directory --usb --version --wipe-persistent-data -h")" -- "$cur")'
 	echo $'      ;;'
 	echo $''
 	echo $'    \'gcp vertex\'*)'
@@ -10821,6 +10825,17 @@ dtools_vm_windows_command() {
 	declare share_directory="${args[--share-directory]}"
 	# shellcheck disable=SC2154
 	declare persistent_dir_prefix="${args[--persistent-dir-prefix]:-$version}"
+	# shellcheck disable=SC2154
+	declare usb="${args[--usb]}"
+	declare -a flags=()
+
+	if [[ -n "$usb" ]]; then
+		vendor_id="$(udevadm info --query=all --name="$usb" | grep ID_VENDOR_ID | awk -F= '{print $2}')"
+		product_id="$(udevadm info --query=all --name="$usb" | grep ID_MODEL_ID | awk -F= '{print $2}')"
+		flags+=("--device=/dev/bus/usb")
+		flags+=("-e")
+		flags+=(ARGUMENTS="-device usb-host,vendorid=0x${vendor_id},productid=0x${product_id}")
+	fi
 
 	if [[ "${args[--wipe-persistent-data]}" == 1 ]]; then
 		declare persistent_data_dir="$HOME/.vm/windows/$persistent_dir_prefix"
@@ -10851,6 +10866,7 @@ dtools_vm_windows_command() {
 			-v "$share_directory:/data" \
 			--cap-add NET_ADMIN \
 			--stop-timeout 120 \
+			"${flags[@]}" \
 			-d \
 			dockurr/windows)
 	else
@@ -10866,6 +10882,7 @@ dtools_vm_windows_command() {
 			-v "$share_directory:/data" \
 			--cap-add NET_ADMIN \
 			--stop-timeout 120 \
+			"${flags[@]}" \
 			-d \
 			dockurr/windows)
 	fi
@@ -25364,6 +25381,18 @@ dtools_vm_windows_parse_requirements() {
 				fi
 				;;
 
+			--usb)
+
+				if [[ -n ${2+x} ]]; then
+					args['--usb']="$2"
+					shift
+					shift
+				else
+					printf "%s\n" "--usb requires an argument: --usb USB" >&2
+					exit 1
+				fi
+				;;
+
 			--version)
 
 				if [[ -n ${2+x} ]]; then
@@ -25422,6 +25451,14 @@ dtools_vm_windows_parse_requirements() {
 		validation_output="$(validate_integer "${args['--cpu-cores']:-}")"
 		if [[ -n "${validation_output}" ]]; then
 			printf "validation error in %s:\n%s\n" "--cpu-cores CPU_CORES" "$validation_output" >&2
+			exit 1
+		fi
+	fi
+
+	if [[ -v args['--usb'] ]]; then
+		validation_output="$(validate_device_exists "${args['--usb']:-}")"
+		if [[ -n "${validation_output}" ]]; then
+			printf "validation error in %s:\n%s\n" "--usb USB" "$validation_output" >&2
 			exit 1
 		fi
 	fi

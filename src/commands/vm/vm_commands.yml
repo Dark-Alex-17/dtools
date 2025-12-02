@@ -42,6 +42,10 @@ commands:
         default: "."
         completions:
           - <directory>
+      - long: --usb
+        help: The USB device to mount into the VM (i.e. '/dev/sde')
+        arg: usb
+        validate: device_exists
       - long: --version
         help: The version of Windows to start
         arg: version

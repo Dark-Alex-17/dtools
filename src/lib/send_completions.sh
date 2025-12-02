@@ -1337,7 +1337,7 @@ send_completions() {
   echo $'      ;;'
   echo $''
   echo $'    \'vm windows\'*)'
-  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_dtools_completions_filter "--cpu-cores --disk-size --help --persistent --persistent-dir-prefix --ram-size --share-directory --version --wipe-persistent-data -h")" -- "$cur")'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_dtools_completions_filter "--cpu-cores --disk-size --help --persistent --persistent-dir-prefix --ram-size --share-directory --usb --version --wipe-persistent-data -h")" -- "$cur")'
   echo $'      ;;'
   echo $''
   echo $'    \'gcp vertex\'*)'
