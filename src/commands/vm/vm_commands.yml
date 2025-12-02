@@ -24,50 +24,52 @@ commands:
       - long: --disk-size
         help: The disk size of the VM's drive in GB
         arg: disk_size
-        default: "64"
+        default: '64'
         validate: integer
       - long: --ram-size
         help: The RAM size of the VM's RAM in GB
         arg: ram_size
-        default: "4"
+        default: '4'
         validate: integer
       - long: --cpu-cores
         help: The number of CPU cores the VM is allowed to use
         arg: cpu_cores
-        default: "2"
+        default: '2'
         validate: integer
       - long: --share-directory
         help: The directory to share with the VM (In Windows, this is the Network#host.lan machine)
         arg: share_directory
-        default: "."
+        default: '.'
         completions:
           - <directory>
       - long: --usb
-        help: The USB device to mount into the VM (i.e. '/dev/sde')
+        help: The USB device to mount into the VM (e.g. '/dev/sde')
         arg: usb
         validate: device_exists
+        completions:
+          - <directory>
       - long: --version
         help: The version of Windows to start
         arg: version
-        default: "11"
+        default: '11'
         allowed:
-          - "11"
-          - "11l"
-          - "11e"
-          - "10"
-          - "10l"
-          - "10e"
-          - "8e"
-          - "7e"
-          - "ve"
-          - "xp"
-          - "2025"
-          - "2022"
-          - "2019"
-          - "2016"
-          - "2012"
-          - "2008"
-          - "2003"
+          - '11'
+          - '11l'
+          - '11e'
+          - '10'
+          - '10l'
+          - '10e'
+          - '8e'
+          - '7e'
+          - 've'
+          - 'xp'
+          - '2025'
+          - '2022'
+          - '2019'
+          - '2016'
+          - '2012'
+          - '2008'
+          - '2003'
 
   - name: linux
     help: Start a Linux VM that's available at http://localhost:8006 and via SSH on port 2222
@@ -108,50 +110,56 @@ commands:
       - long: --disk-size
         help: The disk size of the VM's drive in GB
         arg: disk_size
-        default: "128"
+        default: '128'
         validate: integer
       - long: --ram-size
         help: The RAM size of the VM's RAM in GB
         arg: ram_size
-        default: "8"
+        default: '8'
         validate: integer
       - long: --cpu-cores
         help: The number of CPU cores the VM is allowed to use
         arg: cpu_cores
-        default: "4"
+        default: '4'
         validate: integer
       - long: --share-directory
         help: The directory to share with the VM (Access by running 'mount -t 9p -o trans=virtio shared /mnt/shared' in the container)
         arg: share_directory
-        default: "."
+        default: '.'
+        completions:
+          - <directory>
+      - long: --usb
+        help: The USB device to mount into the VM (e.g. '/dev/sde')
+        arg: usb
+        validate: device_exists
         completions:
           - <directory>
       - long: --dist
         help: The Linux distribution to start
         arg: distribution
         allowed:
-          - "alma"
-          - "alpine"
-          - "arch"
-          - "cachy"
-          - "centos"
-          - "debian"
-          - "fedora"
-          - "gentoo"
-          - "kali"
-          - "kubuntu"
-          - "mint"
-          - "manjaro"
-          - "mx"
-          - "nixos"
-          - "suse"
-          - "oracle"
-          - "rocky"
-          - "slack"
-          - "tails"
-          - "ubuntu"
-          - "ubuntus"
-          - "xubuntu"
+          - 'alma'
+          - 'alpine'
+          - 'arch'
+          - 'cachy'
+          - 'centos'
+          - 'debian'
+          - 'fedora'
+          - 'gentoo'
+          - 'kali'
+          - 'kubuntu'
+          - 'mint'
+          - 'manjaro'
+          - 'mx'
+          - 'nixos'
+          - 'suse'
+          - 'oracle'
+          - 'rocky'
+          - 'slack'
+          - 'tails'
+          - 'ubuntu'
+          - 'ubuntus'
+          - 'xubuntu'
         conflicts: [--image-url]
       - long: --image-url
         help: |-
@@ -191,31 +199,37 @@ commands:
       - long: --disk-size
         help: The disk size of the VM's drive in GB
         arg: disk_size
-        default: "64"
+        default: '64'
         validate: integer
       - long: --ram-size
         help: The RAM size of the VM's RAM in GB
         arg: ram_size
-        default: "4"
+        default: '4'
         validate: integer
       - long: --cpu-cores
         help: The number of CPU cores the VM is allowed to use
         arg: cpu_cores
-        default: "2"
+        default: '2'
         validate: integer
       - long: --share-directory
         help: The directory to share with the VM (Access by running 'mount -S mount_9p shared' in the container; Then it's available under Finder -> Go -> Computer)
         arg: share_directory
-        default: "."
+        default: '.'
+        completions:
+          - <directory>
+      - long: --usb
+        help: The USB device to mount into the VM (e.g. '/dev/sde')
+        arg: usb
+        validate: device_exists
         completions:
           - <directory>
       - long: --version
         help: The version of MacOS to start
         arg: version
-        default: "13"
+        default: '15'
         allowed:
-          - "15"
-          - "14"
-          - "13"
-          - "12"
-          - "11"
+          - '15'
+          - '14'
+          - '13'
+          - '12'
+          - '11'

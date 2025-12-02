@@ -10,6 +10,17 @@ declare ram_size="${args[--ram-size]}"
 declare cpu_cores="${args[--cpu-cores]}"
 # shellcheck disable=SC2154
 declare share_directory="${args[--share-directory]}"
+# shellcheck disable=SC2154
+declare usb="${args[--usb]}"
+declare -a flags=()
+
+if [[ -n "$usb" ]]; then
+  vendor_id="$(udevadm info --query=all --name="$usb" | grep ID_VENDOR_ID | awk -F= '{print $2}')"
+  product_id="$(udevadm info --query=all --name="$usb" | grep ID_MODEL_ID | awk -F= '{print $2}')"
+  flags+=("--device=/dev/bus/usb")
+  flags+=("-e")
+  flags+=(ARGUMENTS="-device usb-host,vendorid=0x${vendor_id},productid=0x${product_id}")
+fi
 
 if [[ -n $dist ]]; then
   image=$dist
@@ -47,6 +58,7 @@ if [[ "${args[--no-gui]}" == 1 ]]; then
       -e "RAM_SIZE=${ram_size}G" \
       -e "CPU_CORES=$cpu_cores" \
       -v "$share_directory:/shared" \
+      "${flags[@]}" \
       --cap-add NET_ADMIN \
       --stop-timeout 120 \
       qemux/qemu
@@ -60,6 +72,7 @@ if [[ "${args[--no-gui]}" == 1 ]]; then
       -e "RAM_SIZE=${ram_size}G" \
       -e "CPU_CORES=$cpu_cores" \
       -v "$share_directory:/shared" \
+      "${flags[@]}" \
       --cap-add NET_ADMIN \
       --stop-timeout 120 \
       qemux/qemu
@@ -78,6 +91,7 @@ else
       -e "RAM_SIZE=${ram_size}G" \
       -e "CPU_CORES=$cpu_cores" \
       -v "$share_directory:/shared" \
+      "${flags[@]}" \
       --cap-add NET_ADMIN \
       --stop-timeout 120 \
       -d \
@@ -94,6 +108,7 @@ else
         -e "RAM_SIZE=${ram_size}G" \
         -e "CPU_CORES=$cpu_cores" \
         -v "$share_directory:/shared" \
+        "${flags[@]}" \
         --cap-add NET_ADMIN \
         --stop-timeout 120 \
         -d \
