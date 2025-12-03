@@ -105,3 +105,6 @@ commands:
     help: A TUI and CLI for managing *arr servers (managarr)
     dependencies:
       managarr: See 'https://github.com/Dark-Alex-17/managarr'
+
+  - name: brew-explorer
+    help: A beautiful terminal UI for exploring and managing your Homebrew packages with ease
