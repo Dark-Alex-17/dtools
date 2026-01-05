@@ -44,6 +44,11 @@ commands:
       gping: See 'https://github.com/orf/gping'
 
   - name: full-browser
+    help: A full-featured web browser for the terminal using Chromium (CEF) and libsixel for graphics rendering (brow6el)
+    dependencies:
+      brow6el: See 'https://codeberg.org/janantos/brow6el'
+
+  - name: text-based-browser
     help: Text based browser with images (browsh)
     dependencies:
       browsh: See 'https://www.brow.sh/'

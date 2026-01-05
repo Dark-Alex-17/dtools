@@ -1,1 +1,1 @@
-docker run -it browsh/browsh
+brow6el
