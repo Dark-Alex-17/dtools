@@ -17,7 +17,7 @@ if (command -v snap > /dev/null 2>&1); then
   LANG=en_US.UTF-8 snap list --all |\
      awk '/disabled/{print $1, $3}' |\
      while read -r snapname revision; do
-  		 snap remove "$snapname" --revision="$revision"
+  		 sudo snap remove "$snapname" --revision="$revision"
      done
    blue_bold "Purging cached Snap versions..."
    sudo rm -rf /var/cache/snapd/*
