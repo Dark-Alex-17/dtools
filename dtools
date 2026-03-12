@@ -8839,42 +8839,51 @@ if [[ $backup == 1 ]]; then
 fi
 
 login() {
-	ssoLoggedIn=$(find "$HOME/.aws/sso/cache" -type f ! -name "botocore*" -exec jq -r '.accessToken | select(. != null)' {} \; | wc -l)
-	if [[ $ssoLoggedIn == 0 || ! -f "$HOME"/.aws/config ]]; then
+	sso_logged_in=$(find "$HOME/.aws/sso/cache" -type f ! -name "botocore*" -exec jq -r '.accessToken | select(. != null)' {} \; | wc -l)
+	if [[ $sso_logged_in == 0 || ! -f "$HOME"/.aws/config ]]; then
 		yellow_bold "You must first be logged into AWS with at least one profile. Logging in now..."
 		[[ -f "$HOME"/.aws/config ]] || touch "$HOME"/.aws/config
 
 		export AWS_PROFILE=''
 		export AWS_REGION=''
 		/usr/bin/expect<<-EOF
-			set force_conservative 1
 			set timeout 120
 			match_max 100000
-			spawn aws configure sso
-			expect "SSO session name (Recommended):"
+
+			spawn env TERM=dumb aws configure sso
+
+			expect -re {SSO session name \(Recommended\):\s*$}
 			send -- "session\r"
-			expect "SSO start URL"
-			send -- "$sso_start_url\\r"
-			expect "SSO region"
+
+			expect -re {SSO start URL \[None\]:\s*$}
+			send -- "$sso_start_url\r"
+
+			expect -re {SSO region \[None\]:\s*$}
 			send -- "$sso_region\r"
-			expect {
-			  "SSO registration scopes" {
-			    send "sso:account:access\\r"
-			    exp_continue
-			  }
-			  -re {(.*)accounts available to you(.*)} {
-			    send "\\r"
-			    exp_continue
-			  }
-			  -re {(.*)roles available to you(.*)} {
-			    send "\\r"
-			    exp_continue
-			  }
-			  "CLI default client Region"
-			}
-			send "\r\r\r\r"
+
+			expect -re {SSO registration scopes \[sso:account:access\]:\s*$}
+			send -- "sso:account:access\r"
+
+			expect -re {CLI default client Region \[None\]:\s*$}
+			send -- "$aws_region\r"
+
+			expect -re {CLI default output format \[None\]:\s*$}
+			send -- "json\r"
+
+			expect -re {CLI profile name .*:\s*$}
+			send -- "\r"
+
 			expect eof
 		EOF
+
+		profiles=$(awk '/\[profile*/ { print substr($2, 1, length($2)-1); }' ~/.aws/config | tail -1)
+
+		if ! aws sso login --profile "${profiles[0]}"; then
+			red_bold "Unable to login. Please try again."
+			exit 1
+		fi
+
+		green "Logged in!"
 	elif ! (aws sts get-caller-identity > /dev/null 2>&1); then
 		red_bold "You must be logged into AWS before running this script."
 		yellow "Logging in via SSO. Follow the steps in the opened browser to log in."
@@ -8897,27 +8906,29 @@ login() {
 
 login
 
-if ! (aws sso list-accounts --profile "${profiles[0]}" --region "$aws_region" --access-token "$ACCESS_TOKEN" --output json > /dev/null 2>&1); then
+if ! (aws sso list-accounts --profile "${profiles[0]}" --region "$sso_region" --access-token "$ACCESS_TOKEN" --output json > /dev/null 2>&1); then
 	red "Unable to use existing SSO access token. Wiping tokens and generating new tokens..."
 	rm "$HOME"/.aws/sso/cache/*.json
 	login
 fi
 
-aws sso list-accounts --profile "${profiles[0]}" --region "$aws_region" --access-token "$ACCESS_TOKEN" --output json | jq '.accountList[]' -rc | while read -r account; do
-	declare accountId
-	declare accountName
-		accountId="$(echo "$account" | jq -rc '.accountId')"
-		accountName="$(echo "$account" | jq -rc '.accountName | ascii_downcase | gsub(" "; "-")')"
+aws sso list-accounts --profile "${profiles[0]}" --region "$sso_region" --access-token "$ACCESS_TOKEN" --output json | jq '.accountList[]' -rc | while read -r account; do
+	declare account_id
+	declare account_name
+	account_id="$(echo "$account" | jq -rc '.accountId')"
+	account_name="$(echo "$account" | jq -rc '.accountName | ascii_downcase | gsub(" "; "-")')"
 
-		aws sso list-account-roles --profile "${profiles[0]}" --region "$aws_region" --access-token "$ACCESS_TOKEN" --output json --account-id "$accountId" | jq '.roleList[].roleName' -rc | while read -r roleName; do
+	aws sso list-account-roles --profile "${profiles[0]}" --region "$sso_region" --access-token "$ACCESS_TOKEN" --output json --account-id "$account_id" |\
+		jq '.roleList[].roleName' -rc |\
+		while read -r role_name; do
 			declare profileName
-			profileName="$accountName-$roleName"
+			profileName="$account_name-$role_name"
 
 			if ! (grep -q "$profileName" ~/.aws/config); then
-				blue "Creating profiles for account $accountName"
-					write-profile-to-config "$accountName-$roleName" "$sso_start_url" "$sso_region" "$accountId" "$roleName" "$aws_region"
+				blue "Creating profiles for account $account_name"
+					write-profile-to-config "$account_name-$role_name" "$sso_start_url" "$sso_region" "$account_id" "$role_name" "$aws_region"
 			fi
-		done
+	  done
 done
 
 green_bold "Successfully generated profiles from AWS SSO!"
