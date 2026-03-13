@@ -8842,13 +8842,19 @@ login() {
 	sso_logged_in=$(find "$HOME/.aws/sso/cache" -type f ! -name "botocore*" -exec jq -r '.accessToken | select(. != null)' {} \; | wc -l)
 	if [[ $sso_logged_in == 0 || ! -f "$HOME"/.aws/config ]]; then
 		yellow_bold "You must first be logged into AWS with at least one profile. Logging in now..."
+		red_bold "You will be required to finish the login process, so control will be returned to you after logging in with your browser"
 		[[ -f "$HOME"/.aws/config ]] || touch "$HOME"/.aws/config
 
 		export AWS_PROFILE=''
 		export AWS_REGION=''
-		/usr/bin/expect<<-EOF
+		export SSO_START_URL="$sso_start_url"
+		export SSO_REGION="$sso_region"
+		/usr/bin/expect <(cat <<-'EOF'
 			set timeout 120
 			match_max 100000
+
+			set sso_start_url $env(SSO_START_URL)
+			set sso_region    $env(SSO_REGION)
 
 			spawn env TERM=dumb aws configure sso
 
@@ -8864,24 +8870,11 @@ login() {
 			expect -re {SSO registration scopes \[sso:account:access\]:\s*$}
 			send -- "sso:account:access\r"
 
-			expect -re {CLI default client Region \[None\]:\s*$}
-			send -- "$aws_region\r"
+			expect -re {.*accounts available to you\s*}
 
-			expect -re {CLI default output format \[None\]:\s*$}
-			send -- "json\r"
-
-			expect -re {CLI profile name .*:\s*$}
-			send -- "\r"
-
-			expect eof
-		EOF
-
-		profiles=$(awk '/\[profile*/ { print substr($2, 1, length($2)-1); }' ~/.aws/config | tail -1)
-
-		if ! aws sso login --profile "${profiles[0]}"; then
-			red_bold "Unable to login. Please try again."
-			exit 1
-		fi
+			interact
+			EOF
+			) 2>/dev/null
 
 		green "Logged in!"
 	elif ! (aws sts get-caller-identity > /dev/null 2>&1); then
