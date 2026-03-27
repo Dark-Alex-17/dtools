@@ -12,3 +12,8 @@ commands:
     help: Wikipedia TUI (wiki-tui)
     dependencies:
       wiki-tui: See 'https://wiki-tui.net/latest/'
+
+  - name: command-lookup
+    help: Interactive command cheatsheet so you don't have to google all your commands (navi)
+    dependencies:
+      navi: See 'https://github.com/denisidoro/navi'

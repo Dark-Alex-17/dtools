@@ -17,3 +17,8 @@ commands:
     help: Linux kernel manager and activity monitor (kmon)
     dependencies:
       kmon: See 'https://github.com/orhun/kmon'
+
+  - name: disk-monitor
+    help: Interactive disk usage navigator (ncdu)
+    dependencies:
+      ncdu: See 'https://dev.yorhel.nl/ncdu'

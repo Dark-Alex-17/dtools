@@ -88,3 +88,8 @@ commands:
     help: Fast, remote-first, multi-host TUI log viewer with timeline histogram and no central server (nerdlog)
     dependencies:
       nerdlog: See 'https://github.com/dimonomid/nerdlog'
+
+  - name: system-benchmark
+    help: Statistic benchmarking using your CLI with warmup rounds, outlier removal, and side-by-side comparison (hyperfine)
+    dependencies:
+      hyperfine: See 'https://github.com/sharkdp/hyperfine'
