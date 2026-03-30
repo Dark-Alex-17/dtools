@@ -288,3 +288,45 @@ commands:
               C-->D
               C-->F
           '
+
+  - name: get-server-tls-cert
+    help: |-
+      Retrieve the TLS certificate from a server and save it to a file.
+      If on a debian-based system and 'ca-certificates' is installed, the certificate will be installed into the system's trust store.
+    dependencies:
+      openssl: Install with either 'sudo apt install libssl-dev' or 'brew install openssl@3'
+    args:
+      - name: host
+        help: Domain name or IP address
+        required: true
+    flags:
+      - long: --port
+        short: -p
+        help: The port to connect to
+        arg: port
+        default: '443'
+        validate: port_number
+      - long: --view-only
+        short: -v
+        help: Only print the certificate(s) to stdout
+        conflicts: [--output-dir, --filename]
+      - long: --output-dir
+        short: -d
+        help: |-
+          Write the certificate to a file.
+          Defaults to `/usr/local/share/ca-certificates`.
+        arg: output
+        completions:
+          - <file>
+        conflicts: [--view-only]
+        default: /usr/local/share/ca-certificates
+      - long: --filename
+        short: -f
+        arg: filename
+        help: |-
+          The name of the '.pem' file to save the cert to.
+          By default, it is 'domain.pem'
+        conflicts: [--view-only]
+    examples:
+      - dtools network get-server-tls-cert google.com --port 443
+      - dtools network get-server-tls-cert example.com --output-dir . --filename example.com
