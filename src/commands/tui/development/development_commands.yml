@@ -8,6 +8,11 @@ commands:
     dependencies:
       gitui: See 'https://github.com/gitui-org/gitui'
 
+  - name: github
+    help: A rich terminal UI for GitHub that doesn't break your flow. (gh-dash)
+    dependencies:
+      gh-dash: See 'https://github.com/dlvhdr/gh-dash'
+
   - name: jira
     help: Jira terminal UI (jirust)
     dependencies:
