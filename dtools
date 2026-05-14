@@ -3320,7 +3320,7 @@ dtools_tui_development_usage() {
 
 	printf "%s\n" "$(bold "Commands:")"
 	printf "  %s   Fast terminal UI for git (gitui)\n" "$(green "git")                  "
-	printf "  %s   A rich terminal UI for GitHub that doesn't break your flow. (gh-dash)\n" "$(green "github")               "
+	printf "  %s   A rich terminal UI for GitHub that doesn't break your flow. (gh dash)\n" "$(green "github")               "
 	printf "  %s   Jira terminal UI (jirust)\n" "$(green "jira")                 "
 	printf "  %s   Render markdown on the CLI (glow)\n" "$(green "readme")               "
 	printf "  %s   Log file navigator (lnav)\n" "$(green "tail-logs")            "
@@ -3369,7 +3369,7 @@ dtools_tui_development_git_usage() {
 }
 
 dtools_tui_development_github_usage() {
-	printf "dtools tui development github - A rich terminal UI for GitHub that doesn't break your flow. (gh-dash)\n\n"
+	printf "dtools tui development github - A rich terminal UI for GitHub that doesn't break your flow. (gh dash)\n\n"
 
 	printf "%s\n" "$(bold "Usage:")"
 	printf "  dtools tui development github\n"
@@ -10699,7 +10699,7 @@ dtools_tui_development_git_command() {
 
 dtools_tui_development_github_command() {
 
-	gh-dash
+	gh dash
 
 }
 
@@ -21470,12 +21470,12 @@ dtools_tui_development_github_parse_requirements() {
 
 	missing_deps=
 
-	if ! command -v gh-dash >/dev/null 2>&1; then
-		printf "missing dependency: gh-dash\n" >&2
+	if ! command -v gh >/dev/null 2>&1; then
+		printf "missing dependency: gh\n" >&2
 		printf "%s\n\n" "See 'https://github.com/dlvhdr/gh-dash'" >&2
 		missing_deps=1
 	else
-		deps['gh-dash']="$(command -v gh-dash | head -n1)"
+		deps['gh']="$(command -v gh | head -n1)"
 	fi
 
 	if [[ -n $missing_deps ]]; then

@@ -1,1 +1,1 @@
-gh-dash
+gh dash
