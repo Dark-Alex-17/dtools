@@ -22,3 +22,8 @@ commands:
     help: Interactive disk usage navigator (ncdu)
     dependencies:
       ncdu: See 'https://dev.yorhel.nl/ncdu'
+
+  - name: open-telemetry
+    help: A terminal OpenTelemetry viewer (otel-tui)
+    dependencies:
+      otel-tui: See 'https://github.com/ymtdzzz/otel-tui'
