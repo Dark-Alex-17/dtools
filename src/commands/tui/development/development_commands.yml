@@ -98,3 +98,8 @@ commands:
     help: Statistic benchmarking using your CLI with warmup rounds, outlier removal, and side-by-side comparison (hyperfine)
     dependencies:
       hyperfine: See 'https://github.com/sharkdp/hyperfine'
+
+  - name: git-file-downloader
+    help: A TUI for downloading files from GitHub (ghgrab)
+    dependencies:
+      ghgrab: See 'https://github.com/abhixdd/ghgrab'
