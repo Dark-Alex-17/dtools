@@ -92,3 +92,8 @@ commands:
     help: Local Area Network discovery tool with a modern Terminal User Interface (TUI) written in Go. Discover, explore, and understand your LAN in an intuitive way. Knock Knock.. who's there? (whosthere)
     dependencies:
       whosthere: See 'https://github.com/ramonvermeulen/whosthere'
+
+  - name: network-diagnostic
+    help: Fast, modern traceroute with real-time TUI, per-hop stats, ASN/geo lookup, ECMP detection, and MPLS label parsing. A better mtr. (ttl)
+    dependencies:
+      ttl: See 'https://github.com/lance0/ttl'
