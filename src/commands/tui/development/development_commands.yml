@@ -103,3 +103,8 @@ commands:
     help: A TUI for downloading files from GitHub (ghgrab)
     dependencies:
       ghgrab: See 'https://github.com/abhixdd/ghgrab'
+
+  - name: argocd-tui
+    help: Keyboard-first terminal UI for Argo CD. Browse apps, scope by clusters/namespaces/projects, stream live resource status, trigger syncs, inspect diffs, and roll back safely — all without leaving your terminal. (argonaut)
+    dependencies:
+      argonaut: See 'https://github.com/darksworm/argonaut'
